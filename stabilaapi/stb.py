@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------
 
 """
-    tronapi.trx
+    stabilaapi.stb
     ===============
 
     Work with basic methods
@@ -17,33 +17,33 @@
 import math
 from typing import Any
 
-from trx_utils import is_integer, is_hex
-from trx_utils.types import is_object, is_string, is_list
+from stb_utils import is_integer, is_hex
+from stb_utils.types import is_object, is_string, is_list
 
-from tronapi.common.transactions import wait_for_transaction_id
-from tronapi.contract import Contract
-from tronapi.exceptions import InvalidTronError, TronError, TimeExhausted
-from tronapi.module import Module
-from tronapi.common.blocks import select_method_for_block
-from tronapi.common.toolz import (
+from stabilaapi.common.transactions import wait_for_transaction_id
+from stabilaapi.contract import Contract
+from stabilaapi.exceptions import InvalidStabilaError, StabilaError, TimeExhausted
+from stabilaapi.module import Module
+from stabilaapi.common.blocks import select_method_for_block
+from stabilaapi.common.toolz import (
     assoc
 )
-from tronapi.common.account import Account
+from stabilaapi.common.account import Account
 
-TRX_MESSAGE_HEADER = '\x19TRON Signed Message:\n'
+STB_MESSAGE_HEADER = '\x19STABILA Signed Message:\n'
 ETH_MESSAGE_HEADER = '\x19Ethereum Signed Message:\n'
 
 
-class Trx(Module):
+class Stb(Module):
     default_contract_factory = Contract
 
     def get_current_block(self):
         """Query the latest block"""
-        return self.tron.manager.request(url='/wallet/getnowblock')
+        return self.stabila.manager.request(url='/wallet/getnowblock')
 
     def get_confirmed_current_block(self):
         """Query the confirmed latest block"""
-        return self.tron.manager.request('/walletsolidity/getnowblock')
+        return self.stabila.manager.request('/walletsolidity/getnowblock')
 
     def get_block(self, block: Any = None):
         """Get block details using HashString or blockNumber
@@ -56,7 +56,7 @@ class Trx(Module):
         # If the block identifier is not specified,
         # we take the default
         if block is None:
-            block = self.tron.default_block
+            block = self.stabila.default_block
 
         if block == 'latest':
             return self.get_current_block()
@@ -69,7 +69,7 @@ class Trx(Module):
             if_number={'url': '/wallet/getblockbynum', 'field': 'num'},
         )
 
-        result = self.tron.manager.request(method['url'], {
+        result = self.stabila.manager.request(method['url'], {
             method['field']: block
         })
 
@@ -86,7 +86,7 @@ class Trx(Module):
         if not is_integer(num) or num < 0:
             raise ValueError('Invalid num provided')
 
-        return self.tron.manager.request('/wallet/gettransactioncountbyblocknum', {
+        return self.stabila.manager.request('/wallet/gettransactioncountbyblocknum', {
             'num': num
         })
 
@@ -99,7 +99,7 @@ class Trx(Module):
         """
         transaction = self.get_block(block)
         if 'transactions' not in transaction:
-            raise TronError('Parameter "transactions" not found')
+            raise StabilaError('Parameter "transactions" not found')
 
         return len(transaction)
 
@@ -112,11 +112,11 @@ class Trx(Module):
 
         """
         if not is_integer(index) or index < 0:
-            raise InvalidTronError('Invalid transaction index provided')
+            raise InvalidStabilaError('Invalid transaction index provided')
 
         transactions = self.get_block(block).get('transactions')
         if not transactions or len(transactions) < index:
-            raise TronError('Transaction not found in block')
+            raise StabilaError('Transaction not found in block')
 
         return transactions[index]
 
@@ -143,7 +143,7 @@ class Trx(Module):
             if poll_latency > timeout:
                 poll_latency = timeout
 
-            return wait_for_transaction_id(self.tron, transaction_hash, timeout, poll_latency)
+            return wait_for_transaction_id(self.stabila, transaction_hash, timeout, poll_latency)
         except TimeoutError:
             raise TimeExhausted(
                 "Transaction {} is not in the chain, after {} seconds".format(
@@ -162,7 +162,7 @@ class Trx(Module):
         """
 
         method = 'walletsolidity' if is_confirm else 'wallet'
-        response = self.tron.manager.request('/{}/gettransactionbyid'.format(method), {
+        response = self.stabila.manager.request('/{}/gettransactionbyid'.format(method), {
             'value': transaction_id
         })
 
@@ -180,12 +180,12 @@ class Trx(Module):
             account_id = id[2:]
 
         if 'confirmed' in options:
-            return self.tron.manager.request('/walletsolidity/getaccountbyid', {
-                'account_id': self.tron.toHex(text=account_id)
+            return self.stabila.manager.request('/walletsolidity/getaccountbyid', {
+                'account_id': self.stabila.toHex(text=account_id)
             })
 
-        return self.tron.manager.request('/wallet/getaccountbyid', {
-            'account_id': self.tron.toHex(text=account_id)
+        return self.stabila.manager.request('/wallet/getaccountbyid', {
+            'account_id': self.stabila.toHex(text=account_id)
         })
 
     def get_unconfirmed_account_by_id(self, account_id: str):
@@ -206,13 +206,13 @@ class Trx(Module):
         """
 
         if address is None:
-            address = self.tron.default_address.hex
+            address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+        if not self.stabila.isAddress(address):
+            raise InvalidStabilaError('Invalid address provided')
 
-        return self.tron.manager.request('/wallet/getaccountresource', {
-            'address': self.tron.address.to_hex(address)
+        return self.stabila.manager.request('/wallet/getaccountresource', {
+            'address': self.stabila.address.to_hex(address)
         })
 
     def get_account(self, address=None):
@@ -227,7 +227,7 @@ class Trx(Module):
             address = self.tron.default_address.hex
 
         if not self.tron.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
         return self.tron.manager.request('/walletsolidity/getaccount', {
             'address': self.tron.address.to_hex(address)
@@ -246,7 +246,7 @@ class Trx(Module):
             return 0
 
         if is_float:
-            return self.tron.fromSun(response['balance'])
+            return self.tron.fromUnit(response['balance'])
 
         return response['balance']
 
@@ -263,7 +263,7 @@ class Trx(Module):
         """
 
         if direction not in ['from', 'to', 'all']:
-            raise InvalidTronError('Invalid direction provided: Expected "to", "from" or "all"')
+            raise InvalidStabilaError('Invalid direction provided: Expected "to", "from" or "all"')
 
         if direction == 'all':
             _from = self.get_transactions_related(address, 'from', limit, offset)
@@ -280,13 +280,13 @@ class Trx(Module):
             address = self.tron.default_address.hex
 
         if not self.tron.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
         if not isinstance(limit, int) or limit < 0 or (offset and limit < 1):
-            raise InvalidTronError('Invalid limit provided')
+            raise InvalidStabilaError('Invalid limit provided')
 
         if not isinstance(offset, int) or offset < 0:
-            raise InvalidTronError('Invalid offset provided')
+            raise InvalidStabilaError('Invalid offset provided')
 
         path = '/walletextension/gettransactions{0}this'.format(direction)
         response = self.tron.manager.request(path, {
@@ -369,7 +369,7 @@ class Trx(Module):
             address = self.tron.default_address.hex
 
         if not self.tron.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
         response = self.tron.manager.request('/wallet/getaccountnet', {
             'address': self.tron.address.to_hex(address)
@@ -394,11 +394,11 @@ class Trx(Module):
         return response.get('num')
 
     def send(self, to, amount, options=None):
-        """Send funds to the Tron account (option 2)"""
+        """Send funds to the Stabila account (option 2)"""
         return self.send_transaction(to, amount, options)
 
-    def send_trx(self, to, amount, options=None):
-        """Send funds to the Tron account (option 3)"""
+    def send_stb(self, to, amount, options=None):
+        """Send funds to the Stabila account (option 3)"""
         return self.send_transaction(to, amount, options)
 
     def send_transaction(self, to, amount, options=None):
@@ -406,8 +406,8 @@ class Trx(Module):
         Will create and broadcast the transaction if a private key is provided.
 
         Args:
-            to (str): Address to send TRX to.
-            amount (float): Amount of TRX to send.
+            to (str): Address to send STB to.
+            amount (float): Amount of STB to send.
             options (Any, optional): Options
 
         """
@@ -460,24 +460,24 @@ class Trx(Module):
 
         return result
 
-    def freeze_balance(self, amount=0, duration=3, resource='BANDWIDTH', account=None):
+    def cd_balance(self, amount=0, duration=3, resource='BANDWIDTH', account=None):
         """
-        Freezes an amount of TRX.
-        Will give bandwidth OR Energy and TRON Power(voting rights)
-        to the owner of the frozen tokens.
+        Cdes an amount of STB.
+        Will give bandwidth OR Ucr and STABILA Power(voting rights)
+        to the owner of the cded tokens.
 
         Args:
-            amount (int): number of frozen trx
-            duration (int): duration in days to be frozen
-            resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
-            account (str): address that is freezing trx account
+            amount (int): number of cded stb
+            duration (int): duration in days to be cded
+            resource (str): type of resource, must be either "UCR" or "BANDWIDTH"
+            account (str): address that is freezing stb account
 
         """
 
         if account is None:
             account = self.tron.default_address.hex
 
-        transaction = self.tron.transaction_builder.freeze_balance(
+        transaction = self.tron.transaction_builder.cd_balance(
             amount,
             duration,
             resource,
@@ -488,21 +488,21 @@ class Trx(Module):
 
         return response
 
-    def unfreeze_balance(self, resource='BANDWIDTH', account=None):
+    def uncd_balance(self, resource='BANDWIDTH', account=None):
         """
-        Unfreeze TRX that has passed the minimum freeze duration.
-        Unfreezing will remove bandwidth and TRON Power.
+        Uncd STB that has passed the minimum cd duration.
+        Unfreezing will remove bandwidth and STABILA Power.
 
         Args:
-            resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
-            account (str): address that is freezing trx account
+            resource (str): type of resource, must be either "UCR" or "BANDWIDTH"
+            account (str): address that is freezing stb account
 
         """
 
         if account is None:
             account = self.tron.default_address.hex
 
-        transaction = self.tron.transaction_builder.unfreeze_balance(
+        transaction = self.tron.transaction_builder.uncd_balance(
             resource,
             account
         )
@@ -526,7 +526,7 @@ class Trx(Module):
         """
 
         if 'signature' in transaction:
-            raise TronError('Transaction is already signed')
+            raise StabilaError('Transaction is already signed')
 
         address = self.tron.address.from_private_key(self.tron.private_key).hex.lower()
         owner_address = transaction['raw_data']['contract'][0]['parameter']['value']['owner_address']
@@ -547,18 +547,18 @@ class Trx(Module):
 
         Args:
             transaction (Any): transaction details
-            use_tron (bool): is Tron header
+            use_tron (bool): is Stabila header
             multisig (bool): multi sign
 
         """
 
         if is_string(transaction):
             if not is_hex(transaction):
-                raise TronError('Expected hex message input')
+                raise StabilaError('Expected hex message input')
 
             # Determine which header to attach to the message
             # before encrypting or decrypting
-            header = TRX_MESSAGE_HEADER if use_tron else ETH_MESSAGE_HEADER
+            header = STB_MESSAGE_HEADER if use_tron else ETH_MESSAGE_HEADER
             header += str(len(transaction))
 
             message_hash = self.tron.keccak(text=header+transaction)
@@ -567,7 +567,7 @@ class Trx(Module):
             return signed_message
 
         if not multisig and 'signature' in transaction:
-            raise TronError('Transaction is already signed')
+            raise StabilaError('Transaction is already signed')
 
         try:
             if not multisig:
@@ -592,7 +592,7 @@ class Trx(Module):
 
             return transaction
         except ValueError as err:
-            raise InvalidTronError(err)
+            raise InvalidStabilaError(err)
 
     def broadcast(self, signed_transaction):
         """Broadcast the signed transaction
@@ -602,10 +602,10 @@ class Trx(Module):
 
         """
         if not is_object(signed_transaction):
-            raise InvalidTronError('Invalid transaction provided')
+            raise InvalidStabilaError('Invalid transaction provided')
 
         if 'signature' not in signed_transaction:
-            raise TronError('Transaction is not signed')
+            raise StabilaError('Transaction is not signed')
 
         response = self.tron.manager.request('/wallet/broadcasttransaction',
                                              signed_transaction)
@@ -623,7 +623,7 @@ class Trx(Module):
             transaction (Any): transaction details
         """
         if not is_object(transaction):
-            raise TronError('Invalid transaction provided')
+            raise StabilaError('Invalid transaction provided')
 
         signed_tx = self.sign(transaction)
         return self.broadcast(signed_tx)
@@ -636,18 +636,18 @@ class Trx(Module):
             message (str): The message in the format "hex"
             signed_message (AttributeDict): Signature
             address (str): is Address
-            use_tron (bool): is Tron header
+            use_tron (bool): is Stabila header
 
         """
         if address is None:
             address = self.tron.default_address.base58
 
         if not is_hex(message):
-            raise TronError('Expected hex message input')
+            raise StabilaError('Expected hex message input')
 
         # Determine which header to attach to the message
         # before encrypting or decrypting
-        header = TRX_MESSAGE_HEADER if use_tron else ETH_MESSAGE_HEADER
+        header = STB_MESSAGE_HEADER if use_tron else ETH_MESSAGE_HEADER
         header += str(len(message))
 
         message_hash = self.tron.keccak(text=header+message)
@@ -684,7 +684,7 @@ class Trx(Module):
 
     def apply_for_sr(self, url, address):
         """Apply to become a super representative
-        Note: Applied to become a super representative. Cost 9999 TRX.
+        Note: Applied to become a super representative. Cost 9999 STB.
 
         Args:
             url (str): official website address
@@ -727,7 +727,7 @@ class Trx(Module):
         """
 
         if not self.tron.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
         address = self.tron.address.to_hex(address)
 
@@ -743,7 +743,7 @@ class Trx(Module):
 
         """
         if not isinstance(token_id, str) or not len(token_id):
-            raise InvalidTronError('Invalid token ID provided')
+            raise InvalidStabilaError('Invalid token ID provided')
 
         return self.tron.manager.request('/wallet/getassetissuebyname', {
             'value': self.tron.toHex(text=token_id)
@@ -758,10 +758,10 @@ class Trx(Module):
 
         """
         if not is_integer(start) or start < 0:
-            raise InvalidTronError('Invalid start of range provided')
+            raise InvalidStabilaError('Invalid start of range provided')
 
         if not is_integer(end) or end <= start:
-            raise InvalidTronError('Invalid end of range provided')
+            raise InvalidStabilaError('Invalid end of range provided')
 
         response = self.tron.manager.request('/wallet/getblockbylimitnext', {
             'startNum': int(start),
@@ -778,7 +778,7 @@ class Trx(Module):
 
         """
         if not is_integer(num) or num <= 0:
-            raise InvalidTronError('Invalid limit provided')
+            raise InvalidStabilaError('Invalid limit provided')
 
         response = self.tron.manager.request('/wallet/getblockbylatestnum', {
             'num': num
@@ -803,10 +803,10 @@ class Trx(Module):
 
         """
         if not is_integer(limit) or (limit and offset < 1):
-            raise InvalidTronError('Invalid limit provided')
+            raise InvalidStabilaError('Invalid limit provided')
 
         if not is_integer(offset) or offset < 0:
-            raise InvalidTronError('Invalid offset provided')
+            raise InvalidStabilaError('Invalid offset provided')
 
         if not limit:
             return self.tron.manager.request('/wallet/getassetissuelist').get('assetIssue')
@@ -842,7 +842,7 @@ class Trx(Module):
         """
 
         if not self.tron.isAddress(contract_address):
-            raise InvalidTronError('Invalid contract address provided')
+            raise InvalidStabilaError('Invalid contract address provided')
 
         return self.tron.manager.request('/wallet/getcontract', {
             'value': self.tron.address.to_hex(contract_address)
@@ -852,7 +852,7 @@ class Trx(Module):
         """Work with a contract
 
         Args:
-            address (str): TRON Address
+            address (str): STABILA Address
             **kwargs (any): details (bytecode, abi)
         """
         factory_class = kwargs.pop('contract_factory_class', self.default_contract_factory)
@@ -890,7 +890,7 @@ class Trx(Module):
         """
 
         if not isinstance(exchange_id, int) or exchange_id < 0:
-            raise InvalidTronError('Invalid exchangeID provided')
+            raise InvalidStabilaError('Invalid exchangeID provided')
 
         return self.tron.manager.request('/wallet/getexchangebyid', {
             'id': exchange_id
@@ -908,7 +908,7 @@ class Trx(Module):
 
         """
         if not isinstance(proposal_id, int) or proposal_id < 0:
-            raise InvalidTronError('Invalid proposalID provided')
+            raise InvalidStabilaError('Invalid proposalID provided')
 
         return self.tron.manager.request('/wallet/getproposalbyid', {
             'id': int(proposal_id)
