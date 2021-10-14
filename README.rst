@@ -159,5 +159,5 @@ Documentation is available at `docs <https://stabilaapi-for-python.readthedocs.i
 Donations
 =============
 
-stabila: TRWBqiqoFZysoAeyR1J35ibuyc8EvhUAoY
+stabila:
 
