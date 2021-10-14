@@ -7,7 +7,7 @@
 # Here we specify default values for the different needed urls.
 # They are verified. Don't change this unless you know what you're doing.
 DEFAULT_NODES = {
-    'full_node': 'https://api.stabilagrid.io',
-    'solidity_node': 'https://api.stabilagrid.io',
-    'event_server': 'https://api.stabilagrid.io'
+    'full_node': 'https://206.81.22.207',
+    'solidity_node': 'https://206.81.22.207',
+    'event_server': 'https://206.81.22.207'
 }

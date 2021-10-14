@@ -1,9 +1,9 @@
 from stabilaapi import stabila
 from stabilaapi import HttpProvider
 
-full_node = HttpProvider('https://api.stabilagrid.io')
-solidity_node = HttpProvider('https://api.stabilagrid.io')
-event_server = HttpProvider('https://api.stabilagrid.io')
+full_node = HttpProvider('https://206.81.22.207')
+solidity_node = HttpProvider('https://206.81.22.207')
+event_server = HttpProvider('https://206.81.22.207')
 
 # option 1
 stabila = stabila(full_node=full_node,
