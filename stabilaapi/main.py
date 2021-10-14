@@ -24,8 +24,8 @@ from eth_utils import (
 )
 from hexbytes import HexBytes
 from stb_utils import (
-    to_sun,
-    from_sun,
+    to_unit,
+    from_unit,
     is_integer,
     add_0x_prefix,
     remove_0x_prefix,
@@ -76,8 +76,8 @@ class stabila:
     toJSON = staticmethod(to_json)
 
     # Currency Utility
-    toSun = staticmethod(to_sun)
-    fromSun = staticmethod(from_sun)
+    toUnit = staticmethod(to_unit)
+    fromUnit = staticmethod(from_unit)
 
     # Validate address
     isAddress = staticmethod(is_address)

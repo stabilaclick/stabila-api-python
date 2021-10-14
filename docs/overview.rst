@@ -153,19 +153,19 @@ Type Conversions
 Currency Conversions
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. py:method:: stabila.toSun(value)
+.. py:method:: stabila.toUnit(value)
 
     Returns the value in the denomination specified by the ``currency`` argument
-    converted to sun.
+    converted to unit.
 
 
     .. code-block:: python
 
-        >>> stabila.toSun(1)
+        >>> stabila.toUnit(1)
         1000000
 
 
-.. py:method:: stabila.fromSun(value)
+.. py:method:: stabila.fromUnit(value)
 
     Returns the value in wei converted to the given currency. The value is returned
     as a ``Decimal`` to ensure precision down to the wei.
@@ -173,7 +173,7 @@ Currency Conversions
 
     .. code-block:: python
 
-        >>> stabila.fromSun(1000000)
+        >>> stabila.fromUnit(1000000)
         Decimal('1')
 
 

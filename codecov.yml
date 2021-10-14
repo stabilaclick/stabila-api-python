@@ -29,5 +29,5 @@ coverage:
 comment:
   # @stevepeak (from codecov.io) suggested we change 'suggestions' to 'uncovered'
   # in the following line. Thanks Steve!
-  layout: "header, diff, changes, sunburst, uncovered"
+  layout: "header, diff, changes, unitburst, uncovered"
   behavior: default

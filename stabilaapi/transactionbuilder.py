@@ -68,7 +68,7 @@ class TransactionBuilder(object):
         response = self.stabila.manager.request('/wallet/createtransaction', {
             'to_address': _to,
             'owner_address': _from,
-            'amount': self.stabila.toSun(amount)
+            'amount': self.stabila.toUnit(amount)
         })
 
         return response
@@ -153,7 +153,7 @@ class TransactionBuilder(object):
 
         response = self.stabila.manager.request('/wallet/freezebalance', {
             'owner_address': self.stabila.address.to_hex(account),
-            'frozen_balance': self.stabila.toSun(amount),
+            'frozen_balance': self.stabila.toUnit(amount),
             'frozen_duration': int(duration),
             'resource': resource
         })
@@ -460,13 +460,13 @@ class TransactionBuilder(object):
                 "with it"
             )
 
-        # Maximum STB consumption, measured in SUN (1 STB = 1,000,000 SUN).
+        # Maximum STB consumption, measured in UNIT (1 STB = 1,000,000 UNIT).
         fee_limit = kwargs.setdefault('fee_limit', 0)
         # The same as User Pay Ratio.
         # The percentage of resources specified for users who use this contract.
         # This field accepts integers between [0, 100].
         user_fee_percentage = kwargs.setdefault('consume_user_resource_percent', 0)
-        # Amount of STB transferred with this transaction, measured in SUN (1STB = 1,000,000 SUN)
+        # Amount of STB transferred with this transaction, measured in UNIT (1STB = 1,000,000 UNIT)
         call_value = kwargs.setdefault('call_value', 0)
         # Contract owner address, converted to a hex string
         owner_address = kwargs.setdefault('owner_address', self.stabila.default_address.hex)

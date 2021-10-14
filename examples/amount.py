@@ -10,10 +10,10 @@ stabila = stabila(full_node=full_node,
 
 
 
-stabila.toSun(1)
+stabila.toUnit(1)
 # result: 1000000
 
-stabila.fromSun(1000000)
+stabila.fromUnit(1000000)
 # result: 1
 
 
