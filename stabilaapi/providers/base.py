@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------
 import platform
 
-import tronapi
+import stabilaapi
 
 
 class BaseProvider(object):
@@ -32,10 +32,10 @@ class BaseProvider(object):
     def format_user_agent(name=None):
         """Construct a User-Agent suitable for use in client code.
         This will identify use by the provided ``name`` (which should be on the
-        format ``dist_name/version``), TronAPI version and Python version.
+        format ``dist_name/version``), stabilaAPI version and Python version.
         .. versionadded:: 1.1
         """
-        parts = ['TronAPI/%s' % tronapi.__version__,
+        parts = ['stabilaAPI/%s' % stabilaapi.__version__,
                  '%s/%s' % (platform.python_implementation(),
                             platform.python_version())]
         if name:

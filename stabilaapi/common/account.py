@@ -11,9 +11,9 @@ import base58
 import ecdsa
 from eth_keys import KeyAPI
 from eth_account import Account as ETHAccount
-from trx_utils import is_hex, is_bytes
+from stb_utils import is_hex, is_bytes
 
-from tronapi.common.datastructures import AttributeDict
+from stabilaapi.common.datastructures import AttributeDict
 
 
 class Account:

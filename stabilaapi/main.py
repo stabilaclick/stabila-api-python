@@ -6,10 +6,10 @@
 # --------------------------------------------------------------------
 
 """
-    tronapi.main
+    stabilaapi.main
     ===============
 
-    Connect to the Tron network.
+    Connect to the stabila network.
 
     :copyright: © 2019 by the iEXBase.
     :license: MIT License
@@ -20,10 +20,10 @@ from urllib.parse import urlencode
 from eth_utils import (
     apply_to_return_value,
     to_hex,
-    keccak as tron_keccak,
+    keccak as stabila_keccak,
 )
 from hexbytes import HexBytes
-from trx_utils import (
+from stb_utils import (
     to_sun,
     from_sun,
     is_integer,
@@ -32,12 +32,12 @@ from trx_utils import (
     is_address
 )
 
-from tronapi.common.abi import map_abi_data
+from stabilaapi.common.abi import map_abi_data
 
 
-from tronapi.common.account import Address, PrivateKey, Account
-from tronapi.common.normalizers import abi_resolver
-from tronapi.common.encoding import (
+from stabilaapi.common.account import Address, PrivateKey, Account
+from stabilaapi.common.normalizers import abi_resolver
+from stabilaapi.common.encoding import (
     to_bytes,
     to_int,
     to_text,
@@ -45,22 +45,22 @@ from tronapi.common.encoding import (
     hex_encode_abi_type
 )
 
-from tronapi.exceptions import (
-    InvalidTronError,
-    TronError
+from stabilaapi.exceptions import (
+    InvalidstabilaError,
+    stabilaError
 )
-from tronapi.manager import TronManager
-from tronapi import HttpProvider, constants
-from tronapi.transactionbuilder import TransactionBuilder
-from tronapi.trx import Trx
+from stabilaapi.manager import stabilaManager
+from stabilaapi import HttpProvider, constants
+from stabilaapi.transactionbuilder import TransactionBuilder
+from stabilaapi.stb import Stb
 
 
 DEFAULT_MODULES = {
-    'trx': Trx
+    'stb': Stb
 }
 
 
-class Tron:
+class stabila:
     # Providers
     HTTPProvider = HttpProvider
 
@@ -83,11 +83,11 @@ class Tron:
     isAddress = staticmethod(is_address)
 
     def __init__(self, **kwargs):
-        """Connect to the Tron network.
+        """Connect to the stabila network.
 
         Args:
             kwargs (Any): We fill the most necessary parameters
-            for working with blockchain Tron
+            for working with blockchain stabila
 
         """
 
@@ -100,7 +100,7 @@ class Tron:
         # The node manager allows you to automatically determine the node
         # on the router or manually refer to a specific node.
         # solidity_node, full_node or event_server
-        self.manager = TronManager(self, dict(
+        self.manager = stabilaManager(self, dict(
             full_node=kwargs.get('full_node'),
             solidity_node=kwargs.get('solidity_node'),
             event_server=kwargs.get('event_server')
@@ -152,7 +152,7 @@ class Tron:
 
     @private_key.setter
     def private_key(self, value: str) -> None:
-        """Set a private key used with the TronAPI instance,
+        """Set a private key used with the stabilaAPI instance,
         used for obtaining the address, signing transactions etc...
 
         Args:
@@ -161,27 +161,27 @@ class Tron:
         try:
             private_key = PrivateKey(value)
         except ValueError:
-            raise TronError('Invalid private key provided')
+            raise stabilaError('Invalid private key provided')
 
         self._private_key = str(private_key).lower()
 
     @property
     def default_address(self) -> AttributeDict:
-        """Get a TRON Address"""
+        """Get a stabila Address"""
         return self._default_address
 
     @default_address.setter
     def default_address(self, address: str) -> None:
-        """Sets the address used with all Tron API.
+        """Sets the address used with all stabila API.
         Will not sign any transactions.
 
         Args:
-             address (str) Tron Address
+             address (str) stabila Address
 
         """
 
         if not self.isAddress(address):
-            raise InvalidTronError('Invalid address provided')
+            raise InvalidstabilaError('Invalid address provided')
 
         _hex = self.address.to_hex(address)
         _base58 = self.address.from_hex(address)
@@ -215,13 +215,13 @@ class Tron:
         contract_address = kwargs.setdefault('contract_address', self.default_address.hex)
 
         if not self.isAddress(contract_address):
-            raise InvalidTronError('Invalid contract address provided')
+            raise InvalidstabilaError('Invalid contract address provided')
 
         if event_name and not contract_address:
-            raise TronError('Usage of event name filtering requires a contract address')
+            raise stabilaError('Usage of event name filtering requires a contract address')
 
         if block_number and event_name is None:
-            raise TronError('Usage of block number filtering requires an event name')
+            raise stabilaError('Usage of block number filtering requires an event name')
 
         if not is_integer(page):
             raise ValueError('Invalid size provided')
@@ -274,11 +274,11 @@ class Tron:
     @property
     def address(self) -> Address:
         """Helper object that allows you to convert
-        between hex/base58 and private key representations of a TRON address.
+        between hex/base58 and private key representations of a stabila address.
 
         Note:
             If you wish to convert generic data to hexadecimal strings,
-            please use the function tron.to_hex.
+            please use the function stabila.to_hex.
 
         """
         return Address()
@@ -314,8 +314,8 @@ class Tron:
                 values (any): values
 
             Examples:
-                >>> tron = Tron()
-                >>> sol = tron.solidity_sha3(['uint8[]'], [[1, 2, 3, 4, 5]])
+                >>> stabila = stabila()
+                >>> sol = stabila.solidity_sha3(['uint8[]'], [[1, 2, 3, 4, 5]])
                 >>> assert sol.hex() == '0x5917e5a395fb9b454434de59651d36822a9e29c5ec57474df3e67937b969460c'
 
         """
@@ -339,7 +339,7 @@ class Tron:
     def keccak(primitive=None, text=None, hexstr=None):
         if isinstance(primitive, (bytes, int, type(None))):
             input_bytes = to_bytes(primitive, hexstr=hexstr, text=text)
-            return tron_keccak(input_bytes)
+            return stabila_keccak(input_bytes)
 
         raise TypeError(
             "You called keccak with first arg %r and keywords %r. You must call it with one of "

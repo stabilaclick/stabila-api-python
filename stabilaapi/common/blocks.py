@@ -2,7 +2,7 @@
 # Copyright (c) iEXBase. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 # --------------------------------------------------------------------------------------------
-from trx_utils import (
+from stb_utils import (
     is_string,
     remove_0x_prefix,
     is_hex,

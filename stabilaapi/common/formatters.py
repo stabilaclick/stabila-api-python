@@ -7,12 +7,12 @@
 from collections import Mapping, Iterable
 
 from eth_utils import to_dict
-from trx_utils import (
+from stb_utils import (
     reject_recursive_repeats,
     is_string
 )
 
-from tronapi.common.toolz import (
+from stabilaapi.common.toolz import (
     curry
 )
 

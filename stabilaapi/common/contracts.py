@@ -12,9 +12,9 @@ from eth_utils import (
     to_hex,
     function_abi_to_4byte_selector
 )
-from trx_utils import is_text, encode_hex
+from stb_utils import is_text, encode_hex
 
-from tronapi.common.abi import (
+from stabilaapi.common.abi import (
     filter_by_name,
     filter_by_encodability,
     filter_by_argument_count,
@@ -26,12 +26,12 @@ from tronapi.common.abi import (
     merge_args_and_kwargs
 )
 
-from tronapi.common.normalizers import (
+from stabilaapi.common.normalizers import (
     abi_address_to_hex,
     abi_bytes_to_bytes,
     abi_string_to_text
 )
-from tronapi.common.toolz import (
+from stabilaapi.common.toolz import (
     pipe,
     valmap,
 )
@@ -106,7 +106,7 @@ def find_matching_fn_abi(abi, fn_identifier=None, args=None, kwargs=None):
         raise ValueError(message)
 
 
-def encode_abi(tron, abi, arguments, data=None):
+def encode_abi(stabila, abi, arguments, data=None):
     argument_types = get_abi_input_types(abi)
 
     if not check_if_arguments_can_be_encoded(abi, arguments, {}):

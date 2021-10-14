@@ -6,11 +6,11 @@ from collections import (
     Sequence,
 )
 
-from trx_utils import (
+from stb_utils import (
     is_integer,
 )
 
-from tronapi.common.formatters import (
+from stabilaapi.common.formatters import (
     recursive_map,
 )
 

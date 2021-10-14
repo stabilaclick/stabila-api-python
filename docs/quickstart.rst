@@ -10,12 +10,12 @@ Quickstart
 Installation
 ------------
 
-TronAPI can be installed (preferably in a :ref:`virtualenv <setup_environment>`)
+stabilaAPI can be installed (preferably in a :ref:`virtualenv <setup_environment>`)
 using ``pip`` as follows:
 
 .. code-block:: shell
 
-   $ pip install tronapi
+   $ pip install stabilaapi
 
 
 .. NOTE:: If you run into problems during installation, you might have a
@@ -30,31 +30,31 @@ following command.
    $ pip install .
 
 
-Using TronAPI
+Using stabilaAPI
 ----------
 
-To use the tron library you will need to initialize the
-:class:`~tronapi` class.
+To use the stabila library you will need to initialize the
+:class:`~stabilaapi` class.
 
 .. code-block:: python
 
-    >>> from tronapi import Tron
-    >>> full_node = HttpProvider('https://api.trongrid.io')
-    >>> solidity_node = HttpProvider('https://api.trongrid.io')
-    >>> event_server = 'https://api.trongrid.io'
+    >>> from stabilaapi import stabila
+    >>> full_node = HttpProvider('https://api.stabilagrid.io')
+    >>> solidity_node = HttpProvider('https://api.stabilagrid.io')
+    >>> event_server = 'https://api.stabilagrid.io'
     >>>
-    >>> tron = Tron(full_node, solidity_node, event_server)
-    >>> tron.default_block = 'latest'
+    >>> stabila = stabila(full_node, solidity_node, event_server)
+    >>> stabila.default_block = 'latest'
 
 
 Getting Blockchain Info
 ----------------------------------------
 
-It's time to start using TronAPI for Python! Try getting all the information about the latest block.
+It's time to start using stabilaAPI for Python! Try getting all the information about the latest block.
 
 .. code-block:: python
 
-    >>> tron.get_block('latest')
+    >>> stabila.get_block('latest')
     >>> {
     "blockID": "00000000003a5bbda4aea15cb5d99230674463e9d5f2c0c647316839b25fd5b9",
     "block_header": {

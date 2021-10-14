@@ -25,16 +25,16 @@ from eth_abi.registry import (
 
 from eth_utils import to_tuple
 
-from trx_utils import (
+from stb_utils import (
     decode_hex,
     is_bytes,
     is_text,
     to_text
 )
 
-from tronapi.common.formatters import recursive_map
-from tronapi.exceptions import FallbackNotFound
-from tronapi.common.toolz import (
+from stabilaapi.common.formatters import recursive_map
+from stabilaapi.exceptions import FallbackNotFound
+from stabilaapi.common.toolz import (
     curry,
     partial,
     pipe,

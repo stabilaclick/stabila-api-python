@@ -12,7 +12,7 @@ from typing import (
 )
 
 from eth_abi import encode_abi
-from trx_utils import (
+from stb_utils import (
     is_string,
     is_integer,
     is_boolean,
@@ -20,20 +20,20 @@ from trx_utils import (
     encode_hex
 )
 
-from tronapi.exceptions import (
-    InvalidTronError,
-    TronError,
+from stabilaapi.exceptions import (
+    InvalidstabilaError,
+    stabilaError,
     InvalidAddress
 )
-from tronapi.common.validation import is_valid_url
+from stabilaapi.common.validation import is_valid_url
 
 DEFAULT_TIME = datetime.now()
 START_DATE = int(DEFAULT_TIME.timestamp() * 1000)
 
 
 class TransactionBuilder(object):
-    def __init__(self, tron):
-        self.tron = tron
+    def __init__(self, stabila):
+        self.stabila = stabila
 
     def send_transaction(self, to, amount, account=None):
         """Creates a transaction of transfer.
@@ -51,24 +51,24 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(to):
-            raise InvalidTronError('Invalid recipient address provided')
+        if not self.stabila.isAddress(to):
+            raise InvalidstabilaError('Invalid recipient address provided')
 
         if not isinstance(amount, float) or amount <= 0:
-            raise InvalidTronError('Invalid amount provided')
+            raise InvalidstabilaError('Invalid amount provided')
 
-        _to = self.tron.address.to_hex(to)
-        _from = self.tron.address.to_hex(account)
+        _to = self.stabila.address.to_hex(to)
+        _from = self.stabila.address.to_hex(account)
 
         if _to == _from:
-            raise TronError('Cannot transfer TRX to the same account')
+            raise stabilaError('Cannot transfer STB to the same account')
 
-        response = self.tron.manager.request('/wallet/createtransaction', {
+        response = self.stabila.manager.request('/wallet/createtransaction', {
             'to_address': _to,
             'owner_address': _from,
-            'amount': self.tron.toSun(amount)
+            'amount': self.stabila.toSun(amount)
         })
 
         return response
@@ -89,32 +89,32 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(to):
-            raise InvalidTronError('Invalid recipient address provided')
+        if not self.stabila.isAddress(to):
+            raise InvalidstabilaError('Invalid recipient address provided')
 
         if not isinstance(amount, int) or amount <= 0:
-            raise InvalidTronError('Invalid amount provided')
+            raise InvalidstabilaError('Invalid amount provided')
 
         if not token_id:
-            raise InvalidTronError('Invalid token ID provided')
+            raise InvalidstabilaError('Invalid token ID provided')
 
-        if not self.tron.isAddress(account):
-            raise InvalidTronError('Invalid origin address provided')
+        if not self.stabila.isAddress(account):
+            raise InvalidstabilaError('Invalid origin address provided')
 
-        _to = self.tron.address.to_hex(to)
-        _from = self.tron.address.to_hex(account)
-        _token_id = self.tron.toHex(text=str(token_id))
+        _to = self.stabila.address.to_hex(to)
+        _from = self.stabila.address.to_hex(account)
+        _token_id = self.stabila.toHex(text=str(token_id))
 
         if _to == _from:
-            raise TronError('Cannot transfer TRX to the same account')
+            raise stabilaError('Cannot transfer STB to the same account')
 
-        # In case if "TRX" is specified, we redirect to another method.
-        if is_string(token_id) and token_id.upper() == 'TRX':
+        # In case if "STB" is specified, we redirect to another method.
+        if is_string(token_id) and token_id.upper() == 'STB':
             return self.send_transaction(_to, amount, _from)
 
-        return self.tron.manager.request('/wallet/transferasset', {
+        return self.stabila.manager.request('/wallet/transferasset', {
             'to_address': _to,
             'owner_address': _from,
             'asset_name': _token_id,
@@ -123,69 +123,69 @@ class TransactionBuilder(object):
 
     def freeze_balance(self, amount, duration, resource, account=None):
         """
-        Freezes an amount of TRX.
-        Will give bandwidth OR Energy and TRON Power(voting rights)
+        Freezes an amount of STB.
+        Will give bandwidth OR Energy and stabila Power(voting rights)
         to the owner of the frozen tokens.
 
         Args:
-            amount (int): number of frozen trx
+            amount (int): number of frozen stb
             duration (int): duration in days to be frozen
             resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
-            account (str): address that is freezing trx account
+            account (str): address that is freezing stb account
 
         """
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
         if resource not in ('BANDWIDTH', 'ENERGY',):
-            raise InvalidTronError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
+            raise InvalidstabilaError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
 
         if not is_integer(amount) or amount <= 0:
-            raise InvalidTronError('Invalid amount provided')
+            raise InvalidstabilaError('Invalid amount provided')
 
         if not is_integer(duration) or duration < 3:
-            raise InvalidTronError('Invalid duration provided, minimum of 3 days')
+            raise InvalidstabilaError('Invalid duration provided, minimum of 3 days')
 
-        if not self.tron.isAddress(account):
-            raise InvalidTronError('Invalid address provided')
+        if not self.stabila.isAddress(account):
+            raise InvalidstabilaError('Invalid address provided')
 
-        response = self.tron.manager.request('/wallet/freezebalance', {
-            'owner_address': self.tron.address.to_hex(account),
-            'frozen_balance': self.tron.toSun(amount),
+        response = self.stabila.manager.request('/wallet/freezebalance', {
+            'owner_address': self.stabila.address.to_hex(account),
+            'frozen_balance': self.stabila.toSun(amount),
             'frozen_duration': int(duration),
             'resource': resource
         })
 
         if 'Error' in response:
-            raise TronError(response['Error'])
+            raise stabilaError(response['Error'])
 
         return response
 
     def unfreeze_balance(self, resource='BANDWIDTH', account=None):
         """
-        Unfreeze TRX that has passed the minimum freeze duration.
-        Unfreezing will remove bandwidth and TRON Power.
+        Unfreeze STB that has passed the minimum freeze duration.
+        Unfreezing will remove bandwidth and stabila Power.
 
         Args:
             resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
-            account (str): address that is freezing trx account
+            account (str): address that is freezing stb account
 
         """
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
         if resource not in ('BANDWIDTH', 'ENERGY',):
-            raise InvalidTronError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
+            raise InvalidstabilaError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
 
-        if not self.tron.isAddress(account):
-            raise InvalidTronError('Invalid address provided')
+        if not self.stabila.isAddress(account):
+            raise InvalidstabilaError('Invalid address provided')
 
-        response = self.tron.manager.request('/wallet/unfreezebalance', {
-            'owner_address': self.tron.address.to_hex(account),
+        response = self.stabila.manager.request('/wallet/unfreezebalance', {
+            'owner_address': self.stabila.address.to_hex(account),
             'resource': resource
         })
 
@@ -207,9 +207,9 @@ class TransactionBuilder(object):
         """
 
         if buyer is None:
-            buyer = self.tron.default_address.hex
+            buyer = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(to):
+        if not self.stabila.isAddress(to):
             raise InvalidAddress('Invalid to address provided')
 
         if not len(token_id):
@@ -218,13 +218,13 @@ class TransactionBuilder(object):
         if amount <= 0:
             raise ValueError('Invalid amount provided')
 
-        _to = self.tron.address.to_hex(to)
-        _from = self.tron.address.to_hex(buyer)
+        _to = self.stabila.address.to_hex(to)
+        _from = self.stabila.address.to_hex(buyer)
 
-        return self.tron.manager.request('/wallet/participateassetissue', {
+        return self.stabila.manager.request('/wallet/participateassetissue', {
             'to_address': _to,
             'owner_address': _from,
-            'asset_name': self.tron.toHex(text=token_id),
+            'asset_name': self.stabila.toHex(text=token_id),
             'amount': int(amount)
         })
 
@@ -237,13 +237,13 @@ class TransactionBuilder(object):
 
         """
         if not address:
-            address = self.tron.default_address.hex
+            address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(address):
+        if not self.stabila.isAddress(address):
             raise InvalidAddress('Invalid address provided')
 
-        return self.tron.manager.request('/wallet/withdrawbalance', {
-            'owner_address': self.tron.address.to_hex(address)
+        return self.stabila.manager.request('/wallet/withdrawbalance', {
+            'owner_address': self.stabila.address.to_hex(address)
         })
 
     def apply_for_sr(self, url, address=None):
@@ -257,17 +257,17 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if address is None:
-            address = self.tron.default_address.hex
+            address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(address):
-            raise TronError('Invalid address provided')
+        if not self.stabila.isAddress(address):
+            raise stabilaError('Invalid address provided')
 
         if not is_valid_url(url):
-            raise TronError('Invalid url provided')
+            raise stabilaError('Invalid url provided')
 
-        return self.tron.manager.request('/wallet/createwitness', {
-            'owner_address': self.tron.address.to_hex(address),
-            'url': self.tron.toHex(text=url)
+        return self.stabila.manager.request('/wallet/createwitness', {
+            'owner_address': self.stabila.address.to_hex(address),
+            'url': self.stabila.toHex(text=url)
         })
 
     def vote(self, votes: List[Tuple[str, int]], voter_address: str = None):
@@ -279,22 +279,22 @@ class TransactionBuilder(object):
             voter_address: voter address
 
         Examples:
-            >>> from tronapi import Tron
+            >>> from stabilaapi import stabila
             >>> data = [
             >>>     ('TRJpw2uqohP7FUmAEJgt57wakRn6aGQU6Z', 1)
             >>> ]
-            >>> tron = Tron()
-            >>> tron.transaction.vote(data)
+            >>> stabila = stabila()
+            >>> stabila.transaction.vote(data)
 
         """
         if voter_address is None:
-            voter_address = self.tron.default_address.hex
+            voter_address = self.stabila.default_address.hex
 
         _view_vote = []
 
         # We create a cycle to check all the received data for voting.
         for sr_address, vote_count in votes:
-            if not self.tron.isAddress(sr_address):
+            if not self.stabila.isAddress(sr_address):
                 raise InvalidAddress(
                     'Invalid SR address provided: ' + sr_address
                 )
@@ -305,12 +305,12 @@ class TransactionBuilder(object):
                 )
 
             _view_vote.append({
-                'vote_address': self.tron.address.to_hex(sr_address),
+                'vote_address': self.stabila.address.to_hex(sr_address),
                 'vote_count': int(vote_count)
             })
 
-        return self.tron.manager.request('/wallet/votewitnessaccount', {
-            'owner_address': self.tron.address.to_hex(voter_address),
+        return self.stabila.manager.request('/wallet/votewitnessaccount', {
+            'owner_address': self.stabila.address.to_hex(voter_address),
             'votes': _view_vote
         })
 
@@ -323,24 +323,24 @@ class TransactionBuilder(object):
             issuer_address: owner address
 
         Examples:
-            >>> from tronapi import Tron
+            >>> from stabilaapi import stabila
             >>> data = [
             >>>     {'key': 1, 'value': 2},
             >>>     {'key': 1, 'value': 2}
             >>> ]
-            >>> tron = Tron()
-            >>> tron.transaction.create_proposal(data)
+            >>> stabila = stabila()
+            >>> stabila.transaction.create_proposal(data)
 
 
         """
         if issuer_address is None:
-            issuer_address = self.tron.default_address.hex
+            issuer_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(issuer_address):
+        if not self.stabila.isAddress(issuer_address):
             raise InvalidAddress('Invalid issuerAddress provided')
 
-        return self.tron.manager.request('/wallet/proposalcreate', {
-            'owner_address': self.tron.address.to_hex(issuer_address),
+        return self.stabila.manager.request('/wallet/proposalcreate', {
+            'owner_address': self.stabila.address.to_hex(issuer_address),
             'parameters': parameters
         })
 
@@ -356,19 +356,19 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if voter_address is None:
-            voter_address = self.tron.default_address.hex
+            voter_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(voter_address):
-            raise TronError('Invalid voter_address address provided')
+        if not self.stabila.isAddress(voter_address):
+            raise stabilaError('Invalid voter_address address provided')
 
         if not is_integer(proposal_id) or proposal_id < 0:
-            raise TronError('Invalid proposal_id provided')
+            raise stabilaError('Invalid proposal_id provided')
 
         if not is_boolean(has_approval):
-            raise TronError('Invalid has_approval provided')
+            raise stabilaError('Invalid has_approval provided')
 
-        return self.tron.manager.request('/wallet/proposalapprove', {
-            'owner_address': self.tron.address.to_hex(voter_address),
+        return self.stabila.manager.request('/wallet/proposalapprove', {
+            'owner_address': self.stabila.address.to_hex(voter_address),
             'proposal_id': int(proposal_id),
             'is_add_approval': bool(has_approval)
         })
@@ -387,16 +387,16 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if issuer_address is None:
-            issuer_address = self.tron.default_address.hex
+            issuer_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(issuer_address):
-            raise InvalidTronError('Invalid issuer_address provided')
+        if not self.stabila.isAddress(issuer_address):
+            raise InvalidstabilaError('Invalid issuer_address provided')
 
         if not isinstance(proposal_id, int) or proposal_id < 0:
-            raise InvalidTronError('Invalid proposal_id provided')
+            raise InvalidstabilaError('Invalid proposal_id provided')
 
-        return self.tron.manager.request('/wallet/proposaldelete', {
-            'owner_address': self.tron.address.to_hex(issuer_address),
+        return self.stabila.manager.request('/wallet/proposaldelete', {
+            'owner_address': self.stabila.address.to_hex(issuer_address),
             'proposal_id': int(proposal_id)
         })
 
@@ -416,17 +416,17 @@ class TransactionBuilder(object):
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
         if not is_string(account_name):
             raise ValueError('Name must be a string')
 
-        if not self.tron.isAddress(account):
-            raise TronError('Invalid origin address provided')
+        if not self.stabila.isAddress(account):
+            raise stabilaError('Invalid origin address provided')
 
-        response = self.tron.manager.request('/wallet/updateaccount', {
-            'account_name': self.tron.toHex(text=account_name),
-            'owner_address': self.tron.address.to_hex(account)
+        response = self.stabila.manager.request('/wallet/updateaccount', {
+            'account_name': self.stabila.toHex(text=account_name),
+            'owner_address': self.stabila.address.to_hex(account)
         })
 
         return response
@@ -439,10 +439,10 @@ class TransactionBuilder(object):
 
         Example:
         .. code-block:: python
-            >>> from tronapi import Tron
+            >>> from stabilaapi import stabila
             >>>
-            >>> tron = Tron()
-            >>> tron.transaction_builder.create_smart_contract(
+            >>> stabila = stabila()
+            >>> stabila.transaction_builder.create_smart_contract(
             >>>    fee_limit=10**9,
             >>>    call_value=0,
             >>>    consume_user_resource_percent=10
@@ -460,16 +460,16 @@ class TransactionBuilder(object):
                 "with it"
             )
 
-        # Maximum TRX consumption, measured in SUN (1 TRX = 1,000,000 SUN).
+        # Maximum STB consumption, measured in SUN (1 STB = 1,000,000 SUN).
         fee_limit = kwargs.setdefault('fee_limit', 0)
         # The same as User Pay Ratio.
         # The percentage of resources specified for users who use this contract.
         # This field accepts integers between [0, 100].
         user_fee_percentage = kwargs.setdefault('consume_user_resource_percent', 0)
-        # Amount of TRX transferred with this transaction, measured in SUN (1TRX = 1,000,000 SUN)
+        # Amount of STB transferred with this transaction, measured in SUN (1STB = 1,000,000 SUN)
         call_value = kwargs.setdefault('call_value', 0)
         # Contract owner address, converted to a hex string
-        owner_address = kwargs.setdefault('owner_address', self.tron.default_address.hex)
+        owner_address = kwargs.setdefault('owner_address', self.stabila.default_address.hex)
         # The max energy which will be consumed by the owner
         # in the process of excution or creation of the contract,
         # is an integer which should be greater than 0.
@@ -495,14 +495,14 @@ class TransactionBuilder(object):
         if not is_integer(origin_energy_limit) or origin_energy_limit < 0:
             return ValueError('Invalid origin_energy_limit provided')
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid issuer address provided')
 
         # We write all the results in one object
         transaction = dict(**kwargs)
-        transaction.setdefault('owner_address', self.tron.address.to_hex(owner_address))
+        transaction.setdefault('owner_address', self.stabila.address.to_hex(owner_address))
 
-        return self.tron.manager.request('/wallet/deploycontract',
+        return self.stabila.manager.request('/wallet/deploycontract',
                                          transaction)
 
     def trigger_smart_contract(self, **kwargs):
@@ -513,8 +513,8 @@ class TransactionBuilder(object):
             **kwargs: Fill in the required parameters
 
         Examples:
-            >>> tron = Tron()
-            >>> tron.transaction_builder.trigger_smart_contract(
+            >>> stabila = stabila()
+            >>> stabila.transaction_builder.trigger_smart_contract(
             >>>     contract_address='413c8143e98b3e2fe1b1a8fb82b34557505a752390',
             >>>     function_selector='set(uint256,uint256)',
             >>>     fee_limit=30000,
@@ -532,7 +532,7 @@ class TransactionBuilder(object):
         contract_address = kwargs.setdefault('contract_address', None)
         function_selector = kwargs.setdefault('function_selector', None)
         parameters = kwargs.setdefault('parameters', [])
-        issuer_address = kwargs.setdefault('issuer_address', self.tron.default_address.hex)
+        issuer_address = kwargs.setdefault('issuer_address', self.stabila.default_address.hex)
         call_value = kwargs.setdefault('call_value', 0)
         fee_limit = kwargs.setdefault('fee_limit', 1000000000)
         token_value = kwargs.setdefault('token_value', 0)
@@ -544,7 +544,7 @@ class TransactionBuilder(object):
         if not is_integer(token_id) or token_id < 0:
             raise ValueError('Invalid options.tokenId provided')
 
-        if not self.tron.isAddress(contract_address):
+        if not self.stabila.isAddress(contract_address):
             raise InvalidAddress('Invalid contract address provided')
 
         if not is_string(function_selector):
@@ -566,7 +566,7 @@ class TransactionBuilder(object):
                     raise ValueError('Invalid parameter type provided: ' + abi['type'])
 
                 if abi['type'] == 'address':
-                    abi['value'] = self.tron.address.to_hex(abi['value']).replace('41', '0x', 1)
+                    abi['value'] = self.stabila.address.to_hex(abi['value']).replace('41', '0x', 1)
 
                 types.append(abi['type'])
                 values.append(abi['value'])
@@ -580,8 +580,8 @@ class TransactionBuilder(object):
             parameters = ''
 
         data = {
-            'contract_address': self.tron.address.to_hex(contract_address),
-            'owner_address': self.tron.address.to_hex(issuer_address),
+            'contract_address': self.stabila.address.to_hex(contract_address),
+            'owner_address': self.stabila.address.to_hex(issuer_address),
             'function_selector': function_selector,
             'fee_limit': int(fee_limit),
             'call_value': int(call_value),
@@ -594,40 +594,40 @@ class TransactionBuilder(object):
         if token_id:
             data['token_id'] = int(token_id)
 
-        return self.tron.manager.request('/wallet/triggersmartcontract', data)
+        return self.stabila.manager.request('/wallet/triggersmartcontract', data)
 
-    def create_trx_exchange(self,
+    def create_stb_exchange(self,
                             token_name: str,
                             token_balance: int,
-                            trx_balance: int,
+                            stb_balance: int,
                             account: str = None):
-        """Create an exchange between a token and TRX.
+        """Create an exchange between a token and STB.
         Token Name should be a CASE SENSITIVE string.
-        Note: PLEASE VERIFY THIS ON TRONSCAN.
+        Note: PLEASE VERIFY THIS ON stabilaSCAN.
 
         Args:
             token_name (str): Token Name
             token_balance (int): balance of the first token
-            trx_balance (int): balance of the second token
+            stb_balance (int): balance of the second token
             account (str): Owner Address
         """
 
         # If the address of the sender is not specified, we prescribe the default
         if account is None:
-            account = self.tron.default_address.hex
+            account = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(account):
-            raise TronError('Invalid address provided')
+        if not self.stabila.isAddress(account):
+            raise stabilaError('Invalid address provided')
 
-        if token_balance <= 0 or trx_balance <= 0:
-            raise TronError('Invalid amount provided')
+        if token_balance <= 0 or stb_balance <= 0:
+            raise stabilaError('Invalid amount provided')
 
-        return self.tron.manager.request('/wallet/exchangecreate', {
-            'owner_address': self.tron.address.to_hex(account),
-            'first_token_id': self.tron.toHex(text=token_name),
+        return self.stabila.manager.request('/wallet/exchangecreate', {
+            'owner_address': self.stabila.address.to_hex(account),
+            'first_token_id': self.stabila.toHex(text=token_name),
             'first_token_balance': token_balance,
             'second_token_id': '5f',
-            'second_token_balance': trx_balance
+            'second_token_balance': stb_balance
         })
 
     def create_token_exchange(self,
@@ -637,7 +637,7 @@ class TransactionBuilder(object):
                               second_token_balance: int,
                               owner_address: str = None):
         """Create an exchange between a token and another token.
-        DO NOT USE THIS FOR TRX.
+        DO NOT USE THIS FOR STB.
         Token Names should be a CASE SENSITIVE string.
 
         Args:
@@ -649,19 +649,19 @@ class TransactionBuilder(object):
 
         """
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid address provided')
 
         if second_token_balance <= 0 or first_token_balance <= 0:
             raise ValueError('Invalid amount provided')
 
-        return self.tron.manager.request('/wallet/exchangecreate', {
-            'owner_address': self.tron.address.to_hex(owner_address),
-            'first_token_id': self.tron.toHex(text=first_token_name),
+        return self.stabila.manager.request('/wallet/exchangecreate', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
+            'first_token_id': self.stabila.toHex(text=first_token_name),
             'first_token_balance': first_token_balance,
-            'second_token_id': self.tron.toHex(text=second_token_name),
+            'second_token_id': self.stabila.toHex(text=second_token_name),
             'second_token_balance': second_token_balance
         })
 
@@ -681,9 +681,9 @@ class TransactionBuilder(object):
 
         """
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid owner_address provided')
 
         if exchange_id < 0:
@@ -692,25 +692,25 @@ class TransactionBuilder(object):
         if token_amount < 1:
             raise ValueError('Invalid token_amount provided')
 
-        return self.tron.manager.request('/wallet/exchangeinject', {
-            'owner_address': self.tron.address.to_hex(owner_address),
+        return self.stabila.manager.request('/wallet/exchangeinject', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
             'exchange_id': exchange_id,
-            'token_id': self.tron.toHex(text=token_name),
+            'token_id': self.stabila.toHex(text=token_name),
             'quant': token_amount
         })
 
     def create_token(self, **kwargs):
         """Issue Token
 
-        Issuing a token on the TRON Protocol can be done by anyone
-        who has at least 1024 TRX in their account.
+        Issuing a token on the stabila Protocol can be done by anyone
+        who has at least 1024 STB in their account.
         When a token is issued it will be shown on the token overview page.
         Users can then participate within the issuing time and exchange their
-        TRX for tokens.After issuing the token your account will
+        STB for tokens.After issuing the token your account will
         receive the amount of tokens equal to the total supply.
-        When other users exchange their TRX for tokens then the tokens
+        When other users exchange their STB for tokens then the tokens
         will be withdrawn from your account and you will receive
-        TRX equal to the specified exchange rate.
+        STB equal to the specified exchange rate.
 
 
         Args:
@@ -725,8 +725,8 @@ class TransactionBuilder(object):
             >>> end = int(end_func.timestamp() * 1000)
             >>>
             >>> opt = {
-            >>>     'name': 'Tron',
-            >>>     'abbreviation': 'TRX',
+            >>>     'name': 'stabila',
+            >>>     'abbreviation': 'STB',
             >>>     'description': 'Hello World',
             >>>     'url': 'https://github.com',
             >>>     'totalSupply': 25000000,
@@ -741,14 +741,14 @@ class TransactionBuilder(object):
 
         """
         issuer_address = kwargs.setdefault(
-            'issuer_address', self.tron.default_address.hex
+            'issuer_address', self.stabila.default_address.hex
         )
 
-        if not self.tron.isAddress(issuer_address):
-            raise TronError('Invalid issuer address provided')
+        if not self.stabila.isAddress(issuer_address):
+            raise stabilaError('Invalid issuer address provided')
 
         total_supply = kwargs.setdefault('totalSupply', 0)
-        trx_ratio = kwargs.setdefault('trxRatio', 1)
+        stb_ratio = kwargs.setdefault('stbRatio', 1)
         token_ratio = kwargs.setdefault('tokenRatio', 1)
         sale_start = kwargs.setdefault(
             'saleStart', START_DATE
@@ -769,8 +769,8 @@ class TransactionBuilder(object):
         if not is_integer(total_supply) or total_supply <= 0:
             raise ValueError('Invalid supply amount provided')
 
-        if not is_integer(trx_ratio) or trx_ratio <= 0:
-            raise ValueError('TRX ratio must be a positive integer')
+        if not is_integer(stb_ratio) or stb_ratio <= 0:
+            raise ValueError('STB ratio must be a positive integer')
 
         if not is_integer(token_ratio) or token_ratio <= 0:
             raise ValueError('Token ratio must be a positive integer')
@@ -814,14 +814,14 @@ class TransactionBuilder(object):
             'frozen_days': int(frozen_duration)
         }
 
-        response = self.tron.manager.request('/wallet/createassetissue', {
-            'owner_address': self.tron.address.to_hex(issuer_address),
-            'name': self.tron.toHex(text=kwargs.get('name')),
-            'abbr': self.tron.toHex(text=kwargs.get('abbreviation')),
-            'description': self.tron.toHex(text=kwargs.get('description')),
-            'url': self.tron.toHex(text=kwargs.get('url')),
+        response = self.stabila.manager.request('/wallet/createassetissue', {
+            'owner_address': self.stabila.address.to_hex(issuer_address),
+            'name': self.stabila.toHex(text=kwargs.get('name')),
+            'abbr': self.stabila.toHex(text=kwargs.get('abbreviation')),
+            'description': self.stabila.toHex(text=kwargs.get('description')),
+            'url': self.stabila.toHex(text=kwargs.get('url')),
             'total_supply': int(total_supply),
-            'trx_num': int(trx_ratio),
+            'stb_num': int(stb_ratio),
             'num': int(token_ratio),
             'start_time': int(sale_start),
             'end_time': int(kwargs.get('saleEnd')),
@@ -850,9 +850,9 @@ class TransactionBuilder(object):
 
         """
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid owner_address provided')
 
         if exchange_id < 0:
@@ -861,10 +861,10 @@ class TransactionBuilder(object):
         if token_amount < 1:
             raise ValueError('Invalid token_amount provided')
 
-        return self.tron.manager.request('/wallet/exchangewithdraw', {
-            'owner_address': self.tron.address.to_hex(owner_address),
+        return self.stabila.manager.request('/wallet/exchangewithdraw', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
             'exchange_id': exchange_id,
-            'token_id': self.tron.toHex(text=token_name),
+            'token_id': self.stabila.toHex(text=token_name),
             'quant': token_amount
         })
 
@@ -887,9 +887,9 @@ class TransactionBuilder(object):
         """
 
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid owner_address provided')
 
         if exchange_id < 0:
@@ -901,10 +901,10 @@ class TransactionBuilder(object):
         if token_amount_expected < 1:
             raise ValueError('Invalid token_amount_expected provided')
 
-        return self.tron.manager.request('/wallet/exchangewithdraw', {
-            'owner_address': self.tron.address.to_hex(owner_address),
+        return self.stabila.manager.request('/wallet/exchangewithdraw', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
             'exchange_id': exchange_id,
-            'token_id': self.tron.toHex(text=token_name),
+            'token_id': self.stabila.toHex(text=token_name),
             'quant': token_amount_sold,
             'expected': token_amount_expected
         })
@@ -925,21 +925,21 @@ class TransactionBuilder(object):
         """
 
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid owner_address provided')
 
-        if not self.tron.isAddress(contract_address):
+        if not self.stabila.isAddress(contract_address):
             raise InvalidAddress('Invalid contract_address provided')
 
         if not is_integer(user_fee_percentage) or user_fee_percentage < 0 or \
                 user_fee_percentage > 100:
             raise ValueError('Invalid user_fee_percentage provided')
 
-        return self.tron.manager.request('wallet/updatesetting', {
-            'owner_address': self.tron.address.to_hex(owner_address),
-            'contract_address': self.tron.address.to_hex(contract_address),
+        return self.stabila.manager.request('wallet/updatesetting', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
+            'contract_address': self.stabila.address.to_hex(contract_address),
             'consume_user_resource_percent': user_fee_percentage
         })
 
@@ -959,21 +959,21 @@ class TransactionBuilder(object):
         """
 
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
-        if not self.tron.isAddress(owner_address):
+        if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid owner_address provided')
 
-        if not self.tron.isAddress(contract_address):
+        if not self.stabila.isAddress(contract_address):
             raise InvalidAddress('Invalid contractAddress provided')
 
         if not is_integer(origin_energy_limit) or origin_energy_limit < 0 or \
                 origin_energy_limit > 10000000:
             raise ValueError('Invalid originEnergyLimit  provided')
 
-        return self.tron.manager.request('wallet/updateenergylimit', {
-            'owner_address': self.tron.address.to_hex(owner_address),
-            'contract_address': self.tron.address.to_hex(contract_address),
+        return self.stabila.manager.request('wallet/updateenergylimit', {
+            'owner_address': self.stabila.address.to_hex(owner_address),
+            'contract_address': self.stabila.address.to_hex(contract_address),
             'origin_energy_limit': origin_energy_limit
         })
 
@@ -987,7 +987,7 @@ class TransactionBuilder(object):
                 return False
 
         for key in permissions['key']:
-            if not self.tron.isAddress(key['address']) or \
+            if not self.stabila.isAddress(key['address']) or \
                     not is_integer(key['weight']) or \
                     key['weight'] > permissions['threshold'] or \
                     key['weight'] < 1 or _type == 2 and not permissions['operations']:
@@ -1010,17 +1010,17 @@ class TransactionBuilder(object):
         """
 
         if owner_address is None:
-            owner_address = self.tron.default_address.hex
+            owner_address = self.stabila.default_address.hex
 
         if not self.check_permissions(owner_permissions, 0):
-            raise InvalidTronError('Invalid ownerPermissions provided')
+            raise InvalidstabilaError('Invalid ownerPermissions provided')
 
         if not self.check_permissions(witness_permissions, 1):
-            raise InvalidTronError('Invalid witnessPermissions provided')
+            raise InvalidstabilaError('Invalid witnessPermissions provided')
 
         for actives_permission in actives_permissions:
             if not self.check_permissions(actives_permission, 2):
-                raise InvalidTronError('Invalid activesPermissions provided')
+                raise InvalidstabilaError('Invalid activesPermissions provided')
 
         data = {
             owner_address: owner_address
@@ -1038,4 +1038,4 @@ class TransactionBuilder(object):
             else:
                 data['actives'] = actives_permissions
 
-        return self.tron.manager.request('wallet/accountpermissionupdate', data)
+        return self.stabila.manager.request('wallet/accountpermissionupdate', data)

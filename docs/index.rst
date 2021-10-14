@@ -1,7 +1,7 @@
-TronAPI
+stabilaAPI
 =======
 
-TronAPI is a python library for interacting with Tron Protocol.
+stabilaAPI is a python library for interacting with stabila Protocol.
 
 Contents
 --------

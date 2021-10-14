@@ -6,7 +6,7 @@
 
 
 """
-    tronapi.providers.http
+    stabilaapi.providers.http
     ======================
 
     Class for configuring http providers
@@ -21,12 +21,12 @@ from urllib.parse import urlparse
 from eth_utils import to_dict
 from requests import Session
 from requests.exceptions import (
-    ConnectionError as TrxConnectionError
+    ConnectionError as StbConnectionError
 )
 
-from tronapi.common.encoding import to_text
-from tronapi.providers.base import BaseProvider
-from tronapi.exceptions import HTTP_EXCEPTIONS, TransportError
+from stabilaapi.common.encoding import to_text
+from stabilaapi.providers.base import BaseProvider
+from stabilaapi.exceptions import HTTP_EXCEPTIONS, TransportError
 
 HTTP_SCHEMES = {'http', 'https'}
 HttpResponse = namedtuple('HttpResponse', ('status_code', 'headers', 'data'))
@@ -38,7 +38,7 @@ class HttpProvider(BaseProvider):
     """A Connection object to make HTTP requests to a particular node."""
 
     def __init__(self, node_url, request_kwargs=None):
-        """Initializes a :class:`~tronapi.providers.http.HttpProvider`
+        """Initializes a :class:`~stabilaapi.providers.http.HttpProvider`
         instance.
 
          Args:
@@ -53,7 +53,7 @@ class HttpProvider(BaseProvider):
         # to work with methods.
         if uri.scheme not in HTTP_SCHEMES:
             raise NotImplementedError(
-                'TronAPI does not know how to connect to scheme %r in %r' % (
+                'stabilaAPI does not know how to connect to scheme %r in %r' % (
                     uri.scheme,
                     self.node_url,
                 )
@@ -88,7 +88,7 @@ class HttpProvider(BaseProvider):
                 params=params,
                 **self.get_request_kwargs(),
             )
-        except TrxConnectionError as err:
+        except StbConnectionError as err:
             raise err
 
         return response.data

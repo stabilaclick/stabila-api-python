@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------
 
 """
-    tronapi.manager
+    stabilaapi.manager
     ===============
 
     This class is designed to configure and
@@ -14,10 +14,10 @@
     :copyright: © 2019 by the iEXBase.
     :license: MIT License
 """
-from trx_utils import is_string
+from stb_utils import is_string
 
-from tronapi import HttpProvider
-from tronapi.constants import DEFAULT_NODES
+from stabilaapi import HttpProvider
+from stabilaapi.constants import DEFAULT_NODES
 
 # In this variable, you can specify the base paths
 # to test the connection with the nodes.
@@ -29,7 +29,7 @@ STATUS_PAGE = {
 }
 
 
-class TronManager(object):
+class stabilaManager(object):
     """This class is designed to configure and define nodes
     for different types.
 
@@ -37,15 +37,15 @@ class TronManager(object):
 
     _providers = None
 
-    def __init__(self, tron, providers):
-        """Create new manager tron instance
+    def __init__(self, stabila, providers):
+        """Create new manager stabila instance
 
         Args:
-            tron: The tron implementation
+            stabila: The stabila implementation
             providers: List of providers
 
         """
-        self.tron = tron
+        self.stabila = stabila
         self.providers = providers
         self.preferred_node = None
 

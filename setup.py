@@ -9,7 +9,7 @@
     setup
     =====
 
-    Tron: A Python API for interacting with Tron (TRX)
+    stabila: A Python API for interacting with Stabila (STB)
 
     :copyright: © 2018 by the iEXBase.
     :license: MIT License
@@ -47,7 +47,7 @@ EXTRAS_REQUIRE = {
         "sphinx_rtd_theme>=0.1.9",
         "toposort>=1.4",
         "urllib3",
-        "tronapi",
+        "stabilaapi",
         "wheel >= 0.31.0"
     ],
 
@@ -84,7 +84,7 @@ install_requires = [
     "eth-utils>=1.3.0,<2.0.0",
     "eth-hash[pycryptodome]>=0.2.0,<1.0.0",
 
-    "trx-utils",
+    "stb-utils",
 
     "hexbytes>=0.1.0,<1.0.0",
 
@@ -102,15 +102,15 @@ with open(readme_filename) as f:
 
 
 setup(
-    name='tronapi',
+    name='stabilaapi',
     version=PACKAGE_VERSION,
-    description='A Python API for interacting with Tron (TRX)',
+    description='A Python API for interacting with Stabila (STB)',
     long_description=PACKAGE_LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
-    keywords='tron tron-api tron-api-python iexbase',
-    url='https://github.com/iexbase/tron-api-python',
-    author='Shamsudin Serderov',
-    author_email='steein.shamsudin@gmail.com',
+    keywords='stabila stabila-api stabila-api-python',
+    url='https://github.com/stabilaclick/stabila-api-python',
+    author='Moneta Stabila',
+    author_email='monetasatbila@gmail.com',
     license='MIT License',
     zip_safe=False,
     python_requires='>=3.6,<4',

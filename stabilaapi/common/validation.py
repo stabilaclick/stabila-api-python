@@ -14,7 +14,7 @@ from eth_utils import (
     apply_formatter_to_array
 )
 
-from trx_utils import (
+from stb_utils import (
     is_hex,
     encode_hex,
     is_0x_prefixed,
@@ -27,17 +27,17 @@ from trx_utils import (
     is_integer,
     is_binary_address, is_hex_address, is_checksum_address)
 
-from tronapi.common.toolz import (
+from stabilaapi.common.toolz import (
     compose,
     groupby,
     valfilter,
     valmap,
 )
 
-from tronapi.common.abi import filter_by_type, abi_to_signature, is_recognized_type, is_string_type, is_bytes_type, \
+from stabilaapi.common.abi import filter_by_type, abi_to_signature, is_recognized_type, is_string_type, is_bytes_type, \
     is_address_type, is_int_type, is_uint_type, is_bool_type, sub_type_of_array_type, is_array_type, \
     length_of_array_type
-from tronapi.exceptions import InvalidAddress
+from stabilaapi.exceptions import InvalidAddress
 
 
 def _prepare_selector_collision_msg(duplicates):

@@ -1,25 +1,25 @@
-from tronapi import Tron
-from tronapi import HttpProvider
+from stabilaapi import stabila
+from stabilaapi import HttpProvider
 
-full_node = HttpProvider('https://api.trongrid.io')
-solidity_node = HttpProvider('https://api.trongrid.io')
-event_server = HttpProvider('https://api.trongrid.io')
+full_node = HttpProvider('https://api.stabilagrid.io')
+solidity_node = HttpProvider('https://api.stabilagrid.io')
+event_server = HttpProvider('https://api.stabilagrid.io')
 
-tron = Tron(full_node=full_node,
+stabila = stabila(full_node=full_node,
             solidity_node=solidity_node,
             event_server=event_server)
 
 
-tron.private_key = 'private_key'
-tron.default_address = 'default address'
+stabila.private_key = 'private_key'
+stabila.default_address = 'default address'
 
 # create transaction
-create_tx = tron.transaction_builder.send_transaction('to', 1, 'from')
+create_tx = stabila.transaction_builder.send_transaction('to', 1, 'from')
 
 # offline sign
-offline_sign = tron.trx.sign(create_tx)
+offline_sign = stabila.stb.sign(create_tx)
 
 
 # online sign (Not recommended)
-online_sign = tron.trx.online_sign(create_tx)
+online_sign = stabila.stb.online_sign(create_tx)
 

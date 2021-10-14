@@ -11,7 +11,7 @@ from eth_utils import (
     big_endian_to_int,
     int_to_big_endian
 )
-from trx_utils import (
+from stb_utils import (
     remove_0x_prefix,
     encode_hex,
     add_0x_prefix,
@@ -22,7 +22,7 @@ from trx_utils import (
     is_bytes
 )
 
-from tronapi.common.abi import (
+from stabilaapi.common.abi import (
     size_of_type,
     sub_type_of_array_type,
     is_array_type,
@@ -35,16 +35,16 @@ from tronapi.common.abi import (
 )
 
 
-from tronapi.common.validation import (
+from stabilaapi.common.validation import (
     validate_abi_type,
     validate_abi_value
 )
 
-from tronapi.common.toolz import (
+from stabilaapi.common.toolz import (
     curry
 )
 
-from tronapi.common.validation import assert_one_val
+from stabilaapi.common.validation import assert_one_val
 
 
 def hex_encode_abi_type(abi_type, value, force_size=None):
@@ -246,7 +246,7 @@ class FriendlyJsonSerialize:
             raise TypeError("Could not encode to JSON: {}".format(exc))
 
 
-class TronJsonEncoder(json.JSONEncoder):
+class stabilaJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, AttributeDict):
             return {k: v for k, v in obj.items()}
@@ -257,4 +257,4 @@ class TronJsonEncoder(json.JSONEncoder):
 
 def to_json(obj: object) -> object:
     """Convert a complex object (like a transaction object) to a JSON string"""
-    return FriendlyJsonSerialize().json_encode(obj, cls=TronJsonEncoder)
+    return FriendlyJsonSerialize().json_encode(obj, cls=stabilaJsonEncoder)

@@ -5,12 +5,12 @@
 # --------------------------------------------------------------------
 
 
-class TronError(Exception):
-    """Base class for TronAPI exceptions."""
+class stabilaError(Exception):
+    """Base class for stabilaAPI exceptions."""
 
 
-class InvalidTronError(TronError):
-    """Raised Tron Error"""
+class InvalidstabilaError(stabilaError):
+    """Raised stabila Error"""
 
 
 class FallbackNotFound(Exception):
@@ -49,7 +49,7 @@ class ValidationError(Exception):
     pass
 
 
-class TransportError(TronError):
+class TransportError(stabilaError):
     """Base exception for transport related errors.
 
     This is mainly for cases where the status code denotes an HTTP error, and

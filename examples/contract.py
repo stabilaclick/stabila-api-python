@@ -1,11 +1,11 @@
-from tronapi import Tron, HttpProvider
+from stabilaapi import stabila, HttpProvider
 from solc import compile_source
 
-full_node = HttpProvider('https://api.trongrid.io')
-solidity_node = HttpProvider('https://api.trongrid.io')
-event_server = HttpProvider('https://api.trongrid.io')
+full_node = HttpProvider('https://api.stabilagrid.io')
+solidity_node = HttpProvider('https://api.stabilagrid.io')
+event_server = HttpProvider('https://api.stabilagrid.io')
 
-tron = Tron(full_node=full_node,
+stabila = stabila(full_node=full_node,
             solidity_node=solidity_node,
             event_server=event_server)
 
@@ -31,7 +31,7 @@ contract Hello {
 compiled_sol = compile_source(contract_source_code)
 contract_interface = compiled_sol['<stdin>:Hello']
 
-hello = tron.trx.contract(
+hello = stabila.stb.contract(
     abi=contract_interface['abi'],
     bytecode=contract_interface['bin']
 )
@@ -43,5 +43,5 @@ tx_data = hello.deploy(
     consume_user_resource_percent=1
 )
 
-sign = tron.trx.sign(tx_data)
-result = tron.trx.broadcast(sign)
+sign = stabila.stb.sign(tx_data)
+result = stabila.stb.broadcast(sign)

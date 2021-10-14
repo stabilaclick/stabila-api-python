@@ -12,14 +12,14 @@ from eth_utils import (
     to_hex
 )
 from hexbytes import HexBytes
-from trx_utils import (
+from stb_utils import (
     encode_hex,
     is_text,
     deprecated_for,
     combomethod
 )
 
-from tronapi.common.abi import (
+from stabilaapi.common.abi import (
     filter_by_type,
     merge_args_and_kwargs,
     abi_to_signature,
@@ -28,20 +28,20 @@ from tronapi.common.abi import (
     map_abi_data
 )
 
-from tronapi.common.contracts import (
+from stabilaapi.common.contracts import (
     find_matching_fn_abi,
     encode_abi,
     get_function_info,
     FallbackFn
 )
-from tronapi.common.datatypes import PropertyCheckingFactory
-from tronapi.common.encoding import to_4byte_hex
-from tronapi.common.normalizers import (
+from stabilaapi.common.datatypes import PropertyCheckingFactory
+from stabilaapi.common.encoding import to_4byte_hex
+from stabilaapi.common.normalizers import (
     normalize_abi,
     normalize_bytecode,
     BASE_RETURN_NORMALIZERS
 )
-from tronapi.exceptions import (
+from stabilaapi.exceptions import (
     NoABIFunctionsFound,
     MismatchedABI,
     FallbackNotFound
@@ -61,7 +61,7 @@ class ContractFunction:
     """Base class for contract functions"""
     address = None
     function_identifier = None
-    tron = None
+    stabila = None
     contract_abi = None
     abi = None
     transaction = None
@@ -119,7 +119,7 @@ class ContractFunctions:
     """Class containing contract function objects
     """
 
-    def __init__(self, abi, tron, address=None):
+    def __init__(self, abi, stabila, address=None):
         if abi:
             self.abi = abi
             self._functions = filter_by_type('function', self.abi)
@@ -129,7 +129,7 @@ class ContractFunctions:
                     func['name'],
                     ContractFunction.factory(
                         func['name'],
-                        tron=tron,
+                        stabila=stabila,
                         contract_abi=self.abi,
                         address=address,
                         function_identifier=func['name']))
@@ -161,7 +161,7 @@ class ContractFunctions:
 
 class Contract:
     # set during class construction
-    tron = None
+    stabila = None
 
     # instance level properties
     address = None
@@ -179,25 +179,25 @@ class Contract:
         """Create a new smart contract proxy object.
         :param address: Contract address as 0x hex string
         """
-        if self.tron is None:
+        if self.stabila is None:
             raise AttributeError(
                 'The `Contract` class has not been initialized.  Please use the '
-                '`tron.contract` interface to create your contract class.'
+                '`stabila.contract` interface to create your contract class.'
             )
 
         if address:
-            self.address = self.tron.address.to_hex(address)
+            self.address = self.stabila.address.to_hex(address)
 
         if not self.address:
             raise TypeError("The address argument is required to instantiate a contract.")
 
-        self.functions = ContractFunctions(self.abi, self.tron, self.address)
-        self.fallback = Contract.get_fallback_function(self.abi, self.tron, self.address)
+        self.functions = ContractFunctions(self.abi, self.stabila, self.address)
+        self.fallback = Contract.get_fallback_function(self.abi, self.stabila, self.address)
 
     @classmethod
-    def factory(cls, tron, class_name=None, **kwargs):
+    def factory(cls, stabila, class_name=None, **kwargs):
 
-        kwargs['tron'] = tron
+        kwargs['stabila'] = stabila
         normalizers = {
             'abi': normalize_abi,
             'bytecode': normalize_bytecode,
@@ -211,8 +211,8 @@ class Contract:
             normalizers=normalizers
         )
 
-        setattr(contract, 'functions', ContractFunctions(contract.abi, contract.tron))
-        setattr(contract, 'fallback', Contract.get_fallback_function(contract.abi, contract.tron))
+        setattr(contract, 'functions', ContractFunctions(contract.abi, contract.stabila))
+        setattr(contract, 'fallback', Contract.get_fallback_function(contract.abi, contract.stabila))
 
         return contract
 
@@ -237,7 +237,7 @@ class Contract:
             transaction as a dict
 
         """
-        return cls.tron.transaction_builder.create_smart_contract(
+        return cls.stabila.transaction_builder.create_smart_contract(
             **kwargs,
             abi=cls.abi,
             bytecode=to_hex(cls.bytecode)
@@ -250,13 +250,13 @@ class Contract:
                 "Cannot call constructor on a contract that does not have 'bytecode' associated "
                 "with it"
             )
-        return ContractConstructor(cls.tron,
+        return ContractConstructor(cls.stabila,
                                    cls.abi,
                                    cls.bytecode)
 
     @combomethod
     def encodeABI(cls, fn_name, args=None, kwargs=None, data=None):
-        """Encodes the arguments using the Tron ABI for the contract function
+        """Encodes the arguments using the stabila ABI for the contract function
         that matches the given name and arguments..
         """
         fn_abi, fn_selector, fn_arguments = get_function_info(
@@ -266,14 +266,14 @@ class Contract:
         if data is None:
             data = fn_selector
 
-        return encode_abi(cls.tron, fn_abi, fn_arguments, data)
+        return encode_abi(cls.stabila, fn_abi, fn_arguments, data)
 
     @staticmethod
-    def get_fallback_function(abi, tron, address=None):
+    def get_fallback_function(abi, stabila, address=None):
         if abi and fallback_func_abi_exists(abi):
             return ContractFunction.factory(
                 'fallback',
-                tron=tron,
+                stabila=stabila,
                 contract_abi=abi,
                 address=address,
                 function_identifier=FallbackFn)()
@@ -283,7 +283,7 @@ class Contract:
     @combomethod
     def all_functions(self):
         return find_functions_by_identifier(
-            self.abi, self.tron, self.address, lambda _: True
+            self.abi, self.stabila, self.address, lambda _: True
         )
 
     @combomethod
@@ -297,7 +297,7 @@ class Contract:
         def callable_check(fn_abi):
             return abi_to_signature(fn_abi) == signature
 
-        fns = find_functions_by_identifier(self.abi, self.tron, self.address, callable_check)
+        fns = find_functions_by_identifier(self.abi, self.stabila, self.address, callable_check)
         return get_function_by_identifier(fns, 'signature')
 
     @combomethod
@@ -306,7 +306,7 @@ class Contract:
             return fn_abi['name'] == fn_name
 
         return find_functions_by_identifier(
-            self.abi, self.tron, self.address, callable_check
+            self.abi, self.stabila, self.address, callable_check
         )
 
     @combomethod
@@ -319,7 +319,7 @@ class Contract:
         def callable_check(fn_abi):
             return encode_hex(function_abi_to_4byte_selector(fn_abi)) == to_4byte_hex(selector)
 
-        fns = find_functions_by_identifier(self.abi, self.tron, self.address, callable_check)
+        fns = find_functions_by_identifier(self.abi, self.stabila, self.address, callable_check)
         return get_function_by_identifier(fns, 'selector')
 
     @combomethod
@@ -339,7 +339,7 @@ class Contract:
             return check_if_arguments_can_be_encoded(fn_abi, args=args, kwargs={})
 
         return find_functions_by_identifier(
-            self.abi, self.tron, self.address, callable_check
+            self.abi, self.stabila, self.address, callable_check
         )
 
     @combomethod
@@ -353,8 +353,8 @@ class ContractConstructor:
     Class for contract constructor API.
     """
 
-    def __init__(self, tron, abi, bytecode):
-        self.tron = tron
+    def __init__(self, stabila, abi, bytecode):
+        self.stabila = stabila
         self.abi = abi
         self.bytecode = bytecode
 
@@ -375,19 +375,19 @@ class ContractConstructor:
             **kwargs: Additional options to send
         """
 
-        return self.tron.transaction_builder.create_smart_contract(
+        return self.stabila.transaction_builder.create_smart_contract(
             **kwargs,
             abi=self.abi,
             bytecode=to_hex(self.bytecode)
         )
 
 
-def find_functions_by_identifier(contract_abi, tron, address, callable_check):
+def find_functions_by_identifier(contract_abi, stabila, address, callable_check):
     fns_abi = filter_by_type('function', contract_abi)
     return [
         ContractFunction.factory(
             fn_abi['name'],
-            tron=tron,
+            stabila=stabila,
             contract_abi=contract_abi,
             address=address,
             function_identifier=fn_abi['name'],

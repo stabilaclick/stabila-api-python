@@ -3,14 +3,14 @@ Overview
 
 .. contents:: :local:
 
-The common entrypoint for interacting with the Tron library is the ``Tron``
-object.  The tron object provides APIs for interacting with the tron
+The common entrypoint for interacting with the stabila library is the ``stabila``
+object.  The stabila object provides APIs for interacting with the stabila
 blockchain, typically by connecting to a HTTP server.
 
 Providers
 ---------
 
-*Providers* are how tron connects to the blockchain.  The TronAPI library comes
+*Providers* are how stabila connects to the blockchain.  The stabilaAPI library comes
 with a the following built-in providers that should be suitable for most normal
 use cases.
 
@@ -22,61 +22,61 @@ local development this would be something like ``http://localhost:8090``.
 
 .. code-block:: python
 
-    >>> from tronapi import HttpProvider, Tron
+    >>> from stabilaapi import HttpProvider, stabila
 
     # Note that you should create only one HttpProvider per
     # process, as it recycles underlying TCP/IP network connections between
-    # your process and Tron node
+    # your process and stabila node
 
     >>> full_node = HttpProvider('http://localhost:8090')
     >>> solidity_node = HttpProvider('http://localhost:8090')
     >>> event_server = HttpProvider('http://localhost:8090')
 
-    >>> tron = Tron(full_node, solidity_node, event_server)
+    >>> stabila = stabila(full_node, solidity_node, event_server)
 
 
 Base API
 --------
 
-The ``Tron`` class exposes the following convenience APIs.
+The ``stabila`` class exposes the following convenience APIs.
 
 .. _overview_type_conversions:
 
 Type Conversions
 ~~~~~~~~~~~~~~~~
 
-.. py:method:: Tron.toHex(primitive=None, hexstr=None, text=None)
+.. py:method:: stabila.toHex(primitive=None, hexstr=None, text=None)
 
     Takes a variety of inputs and returns it in its hexadecimal representation.
 
     .. code-block:: python
 
-        >>> Tron.toHex(0)
+        >>> stabila.toHex(0)
         '0x0'
-        >>> Tron.toHex(1)
+        >>> stabila.toHex(1)
         '0x1'
-        >>> Tron.toHex(0x0)
+        >>> stabila.toHex(0x0)
         '0x0'
-        >>> Tron.toHex(0x000F)
+        >>> stabila.toHex(0x000F)
         '0xf'
-        >>> Tron.toHex(b'')
+        >>> stabila.toHex(b'')
         '0x'
-        >>> Tron.toHex(b'\x00\x0F')
+        >>> stabila.toHex(b'\x00\x0F')
         '0x000f'
-        >>> Tron.toHex(False)
+        >>> stabila.toHex(False)
         '0x0'
-        >>> Tron.toHex(True)
+        >>> stabila.toHex(True)
         '0x1'
-        >>> Tron.toHex(hexstr='0x000F')
+        >>> stabila.toHex(hexstr='0x000F')
         '0x000f'
-        >>> Tron.toHex(hexstr='000F')
+        >>> stabila.toHex(hexstr='000F')
         '0x000f'
-        >>> Tron.toHex(text='')
+        >>> stabila.toHex(text='')
         '0x'
-        >>> Tron.toHex(text='cowmö')
+        >>> stabila.toHex(text='cowmö')
         '0x636f776dc3b6'
 
-.. py:method:: Tron.toText(primitive=None, hexstr=None, text=None)
+.. py:method:: stabila.toText(primitive=None, hexstr=None, text=None)
 
     Takes a variety of inputs and returns its string equivalent.
     Text gets decoded as UTF-8.
@@ -84,19 +84,19 @@ Type Conversions
 
     .. code-block:: python
 
-        >>> Tron.toText(0x636f776dc3b6)
+        >>> stabila.toText(0x636f776dc3b6)
         'cowmö'
-        >>> Tron.toText(b'cowm\xc3\xb6')
+        >>> stabila.toText(b'cowm\xc3\xb6')
         'cowmö'
-        >>> Tron.toText(hexstr='0x636f776dc3b6')
+        >>> stabila.toText(hexstr='0x636f776dc3b6')
         'cowmö'
-        >>> Tron.toText(hexstr='636f776dc3b6')
+        >>> stabila.toText(hexstr='636f776dc3b6')
         'cowmö'
-        >>> Tron.toText(text='cowmö')
+        >>> stabila.toText(text='cowmö')
         'cowmö'
 
 
-.. py:method:: Tron.toBytes(primitive=None, hexstr=None, text=None)
+.. py:method:: stabila.toBytes(primitive=None, hexstr=None, text=None)
 
     Takes a variety of inputs and returns its bytes equivalent.
     Text gets encoded as UTF-8.
@@ -104,48 +104,48 @@ Type Conversions
 
     .. code-block:: python
 
-        >>> Tron.toBytes(0)
+        >>> stabila.toBytes(0)
         b'\x00'
-        >>> Tron.toBytes(0x000F)
+        >>> stabila.toBytes(0x000F)
         b'\x0f'
-        >>> Tron.toBytes(b'')
+        >>> stabila.toBytes(b'')
         b''
-        >>> Tron.toBytes(b'\x00\x0F')
+        >>> stabila.toBytes(b'\x00\x0F')
         b'\x00\x0f'
-        >>> Tron.toBytes(False)
+        >>> stabila.toBytes(False)
         b'\x00'
-        >>> Tron.toBytes(True)
+        >>> stabila.toBytes(True)
         b'\x01'
-        >>> Tron.toBytes(hexstr='0x000F')
+        >>> stabila.toBytes(hexstr='0x000F')
         b'\x00\x0f'
-        >>> Tron.toBytes(hexstr='000F')
+        >>> stabila.toBytes(hexstr='000F')
         b'\x00\x0f'
-        >>> Tron.toBytes(text='')
+        >>> stabila.toBytes(text='')
         b''
-        >>> Tron.toBytes(text='cowmö')
+        >>> stabila.toBytes(text='cowmö')
         b'cowm\xc3\xb6'
 
 
-.. py:method:: Tron.toInt(primitive=None, hexstr=None, text=None)
+.. py:method:: stabila.toInt(primitive=None, hexstr=None, text=None)
 
     Takes a variety of inputs and returns its integer equivalent.
 
 
     .. code-block:: python
 
-        >>> Tron.toInt(0)
+        >>> stabila.toInt(0)
         0
-        >>> Tron.toInt(0x000F)
+        >>> stabila.toInt(0x000F)
         15
-        >>> Tron.toInt(b'\x00\x0F')
+        >>> stabila.toInt(b'\x00\x0F')
         15
-        >>> Tron.toInt(False)
+        >>> stabila.toInt(False)
         0
-        >>> Tron.toInt(True)
+        >>> stabila.toInt(True)
         1
-        >>> Tron.toInt(hexstr='0x000F')
+        >>> stabila.toInt(hexstr='0x000F')
         15
-        >>> Tron.toInt(hexstr='000F')
+        >>> stabila.toInt(hexstr='000F')
         15
 
 .. _overview_currency_conversions:
@@ -153,7 +153,7 @@ Type Conversions
 Currency Conversions
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. py:method:: Tron.toSun(value)
+.. py:method:: stabila.toSun(value)
 
     Returns the value in the denomination specified by the ``currency`` argument
     converted to sun.
@@ -161,11 +161,11 @@ Currency Conversions
 
     .. code-block:: python
 
-        >>> tron.toSun(1)
+        >>> stabila.toSun(1)
         1000000
 
 
-.. py:method:: Tron.fromSun(value)
+.. py:method:: stabila.fromSun(value)
 
     Returns the value in wei converted to the given currency. The value is returned
     as a ``Decimal`` to ensure precision down to the wei.
@@ -173,7 +173,7 @@ Currency Conversions
 
     .. code-block:: python
 
-        >>> tron.fromSun(1000000)
+        >>> stabila.fromSun(1000000)
         Decimal('1')
 
 
@@ -182,13 +182,13 @@ Currency Conversions
 Addresses
 ~~~~~~~~~~~~~~~~
 
-.. py:method:: Tron.isAddress(value)
+.. py:method:: stabila.isAddress(value)
 
     Returns ``True`` if the value is one of the recognized address formats.
 
     .. code-block:: python
 
-        >>> tron.isAddress('TRWBqiqoFZysoAeyR1J35ibuyc8EvhUAoY')
+        >>> stabila.isAddress('TRWBqiqoFZysoAeyR1J35ibuyc8EvhUAoY')
         True
 
 
@@ -198,7 +198,7 @@ Addresses
 Cryptographic Hashing
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. py:classmethod:: Tron.sha3(primitive=None, hexstr=None, text=None)
+.. py:classmethod:: stabila.sha3(primitive=None, hexstr=None, text=None)
 
     Returns the Keccak SHA256 of the given value. Text is encoded to UTF-8 before
     computing the hash, just like Solidity. Any of the following are
@@ -206,10 +206,10 @@ Cryptographic Hashing
 
     .. code-block:: python
 
-        >>> Tron.sha3(0x747874)
-        >>> Tron.sha3(b'\x74\x78\x74')
-        >>> Tron.sha3(hexstr='0x747874')
-        >>> Tron.sha3(hexstr='747874')
-        >>> Tron.sha3(text='txt')
+        >>> stabila.sha3(0x747874)
+        >>> stabila.sha3(b'\x74\x78\x74')
+        >>> stabila.sha3(hexstr='0x747874')
+        >>> stabila.sha3(hexstr='747874')
+        >>> stabila.sha3(text='txt')
         HexBytes('0xd7278090a36507640ea6b7a0034b69b0d240766fa3f98e3722be93c613b29d2e')
 
