@@ -21,8 +21,8 @@ from stb_utils import (
 )
 
 from stabilaapi.exceptions import (
-    InvalidstabilaError,
-    stabilaError,
+    InvalidStabilaError,
+    StabilaError,
     InvalidAddress
 )
 from stabilaapi.common.validation import is_valid_url

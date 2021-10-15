@@ -5,9 +5,9 @@ from stabilaapi import stabila
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
 
-full_node = 'https://206.81.22.207'
-solidity_node = 'https://206.81.22.207'
-event_server = 'https://206.81.22.207/'
+full_node = 'https://api.stabilascan.org'
+solidity_node = 'https://api.stabilascan.org'
+event_server = 'https://api.stabilascan.org/'
 private_key = 'da146374a75310b9666e834ee4ad0866d6f4035967bfc76217c5a495fff9f0d0'
 
 stabila = stabila(full_node=full_node,

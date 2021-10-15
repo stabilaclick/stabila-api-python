@@ -46,8 +46,8 @@ from stabilaapi.common.encoding import (
 )
 
 from stabilaapi.exceptions import (
-    InvalidstabilaError,
-    stabilaError
+    InvalidStabilaError,
+    StabilaError
 )
 from stabilaapi.manager import stabilaManager
 from stabilaapi import HttpProvider, constants

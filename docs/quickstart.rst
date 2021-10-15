@@ -39,9 +39,9 @@ To use the stabila library you will need to initialize the
 .. code-block:: python
 
     >>> from stabilaapi import stabila
-    >>> full_node = HttpProvider('https://206.81.22.207')
-    >>> solidity_node = HttpProvider('https://206.81.22.207')
-    >>> event_server = 'https://206.81.22.207'
+    >>> full_node = HttpProvider('https://api.stabilascan.org')
+    >>> solidity_node = HttpProvider('https://api.stabilascan.org')
+    >>> event_server = 'https://api.stabilascan.org'
     >>>
     >>> stabila = stabila(full_node, solidity_node, event_server)
     >>> stabila.default_block = 'latest'

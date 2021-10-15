@@ -5,11 +5,11 @@
 # --------------------------------------------------------------------
 
 
-class stabilaError(Exception):
+class StabilaError(Exception):
     """Base class for stabilaAPI exceptions."""
 
 
-class InvalidstabilaError(stabilaError):
+class InvalidStabilaError(StabilaError):
     """Raised stabila Error"""
 
 
@@ -49,7 +49,7 @@ class ValidationError(Exception):
     pass
 
 
-class TransportError(stabilaError):
+class TransportError(StabilaError):
     """Base exception for transport related errors.
 
     This is mainly for cases where the status code denotes an HTTP error, and
