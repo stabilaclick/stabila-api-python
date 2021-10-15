@@ -54,16 +54,16 @@ class TransactionBuilder(object):
             account = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(to):
-            raise InvalidstabilaError('Invalid recipient address provided')
+            raise InvalidStabilaError('Invalid recipient address provided')
 
         if not isinstance(amount, float) or amount <= 0:
-            raise InvalidstabilaError('Invalid amount provided')
+            raise InvalidStabilaError('Invalid amount provided')
 
         _to = self.stabila.address.to_hex(to)
         _from = self.stabila.address.to_hex(account)
 
         if _to == _from:
-            raise stabilaError('Cannot transfer STB to the same account')
+            raise StabilaError('Cannot transfer STB to the same account')
 
         response = self.stabila.manager.request('/wallet/createtransaction', {
             'to_address': _to,
@@ -92,23 +92,23 @@ class TransactionBuilder(object):
             account = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(to):
-            raise InvalidstabilaError('Invalid recipient address provided')
+            raise InvalidStabilaError('Invalid recipient address provided')
 
         if not isinstance(amount, int) or amount <= 0:
-            raise InvalidstabilaError('Invalid amount provided')
+            raise InvalidStabilaError('Invalid amount provided')
 
         if not token_id:
-            raise InvalidstabilaError('Invalid token ID provided')
+            raise InvalidStabilaError('Invalid token ID provided')
 
         if not self.stabila.isAddress(account):
-            raise InvalidstabilaError('Invalid origin address provided')
+            raise InvalidStabilaError('Invalid origin address provided')
 
         _to = self.stabila.address.to_hex(to)
         _from = self.stabila.address.to_hex(account)
         _token_id = self.stabila.toHex(text=str(token_id))
 
         if _to == _from:
-            raise stabilaError('Cannot transfer STB to the same account')
+            raise StabilaError('Cannot transfer STB to the same account')
 
         # In case if "STB" is specified, we redirect to another method.
         if is_string(token_id) and token_id.upper() == 'STB':
@@ -121,16 +121,16 @@ class TransactionBuilder(object):
             'amount': amount
         })
 
-    def freeze_balance(self, amount, duration, resource, account=None):
+    def cd_balance(self, amount, duration, resource, account=None):
         """
-        Freezes an amount of STB.
-        Will give bandwidth OR Energy and stabila Power(voting rights)
+        Cds an amount of STB.
+        Will give bandwidth OR Ucr and stabila Power(voting rights)
         to the owner of the frozen tokens.
 
         Args:
             amount (int): number of frozen stb
             duration (int): duration in days to be frozen
-            resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
+            resource (str): type of resource, must be either "UCR" or "BANDWIDTH"
             account (str): address that is freezing stb account
 
         """
@@ -139,19 +139,19 @@ class TransactionBuilder(object):
         if account is None:
             account = self.stabila.default_address.hex
 
-        if resource not in ('BANDWIDTH', 'ENERGY',):
-            raise InvalidstabilaError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
+        if resource not in ('BANDWIDTH', 'UCR',):
+            raise InvalidStabilaError('Invalid resource provided: Expected "BANDWIDTH" or "UCR"')
 
         if not is_integer(amount) or amount <= 0:
-            raise InvalidstabilaError('Invalid amount provided')
+            raise InvalidStabilaError('Invalid amount provided')
 
         if not is_integer(duration) or duration < 3:
-            raise InvalidstabilaError('Invalid duration provided, minimum of 3 days')
+            raise InvalidStabilaError('Invalid duration provided, minimum of 3 days')
 
         if not self.stabila.isAddress(account):
-            raise InvalidstabilaError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
-        response = self.stabila.manager.request('/wallet/freezebalance', {
+        response = self.stabila.manager.request('/wallet/cdbalance', {
             'owner_address': self.stabila.address.to_hex(account),
             'frozen_balance': self.stabila.toUnit(amount),
             'frozen_duration': int(duration),
@@ -159,17 +159,17 @@ class TransactionBuilder(object):
         })
 
         if 'Error' in response:
-            raise stabilaError(response['Error'])
+            raise StabilaError(response['Error'])
 
         return response
 
-    def unfreeze_balance(self, resource='BANDWIDTH', account=None):
+    def uncd_balance(self, resource='BANDWIDTH', account=None):
         """
-        Unfreeze STB that has passed the minimum freeze duration.
+        Uncd STB that has passed the minimum cd duration.
         Unfreezing will remove bandwidth and stabila Power.
 
         Args:
-            resource (str): type of resource, must be either "ENERGY" or "BANDWIDTH"
+            resource (str): type of resource, must be either "UCR" or "BANDWIDTH"
             account (str): address that is freezing stb account
 
         """
@@ -178,13 +178,13 @@ class TransactionBuilder(object):
         if account is None:
             account = self.stabila.default_address.hex
 
-        if resource not in ('BANDWIDTH', 'ENERGY',):
-            raise InvalidstabilaError('Invalid resource provided: Expected "BANDWIDTH" or "ENERGY"')
+        if resource not in ('BANDWIDTH', 'UCR',):
+            raise InvalidStabilaError('Invalid resource provided: Expected "BANDWIDTH" or "UCR"')
 
         if not self.stabila.isAddress(account):
-            raise InvalidstabilaError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
-        response = self.stabila.manager.request('/wallet/unfreezebalance', {
+        response = self.stabila.manager.request('/wallet/uncdbalance', {
             'owner_address': self.stabila.address.to_hex(account),
             'resource': resource
         })
@@ -260,10 +260,10 @@ class TransactionBuilder(object):
             address = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(address):
-            raise stabilaError('Invalid address provided')
+            raise StabilaError('Invalid address provided')
 
         if not is_valid_url(url):
-            raise stabilaError('Invalid url provided')
+            raise StabilaError('Invalid url provided')
 
         return self.stabila.manager.request('/wallet/createwitness', {
             'owner_address': self.stabila.address.to_hex(address),
@@ -359,13 +359,13 @@ class TransactionBuilder(object):
             voter_address = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(voter_address):
-            raise stabilaError('Invalid voter_address address provided')
+            raise StabilaError('Invalid voter_address address provided')
 
         if not is_integer(proposal_id) or proposal_id < 0:
-            raise stabilaError('Invalid proposal_id provided')
+            raise StabilaError('Invalid proposal_id provided')
 
         if not is_boolean(has_approval):
-            raise stabilaError('Invalid has_approval provided')
+            raise StabilaError('Invalid has_approval provided')
 
         return self.stabila.manager.request('/wallet/proposalapprove', {
             'owner_address': self.stabila.address.to_hex(voter_address),
@@ -390,10 +390,10 @@ class TransactionBuilder(object):
             issuer_address = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(issuer_address):
-            raise InvalidstabilaError('Invalid issuer_address provided')
+            raise InvalidStabilaError('Invalid issuer_address provided')
 
         if not isinstance(proposal_id, int) or proposal_id < 0:
-            raise InvalidstabilaError('Invalid proposal_id provided')
+            raise InvalidStabilaError('Invalid proposal_id provided')
 
         return self.stabila.manager.request('/wallet/proposaldelete', {
             'owner_address': self.stabila.address.to_hex(issuer_address),
@@ -422,7 +422,7 @@ class TransactionBuilder(object):
             raise ValueError('Name must be a string')
 
         if not self.stabila.isAddress(account):
-            raise stabilaError('Invalid origin address provided')
+            raise StabilaError('Invalid origin address provided')
 
         response = self.stabila.manager.request('/wallet/updateaccount', {
             'account_name': self.stabila.toHex(text=account_name),
@@ -470,10 +470,10 @@ class TransactionBuilder(object):
         call_value = kwargs.setdefault('call_value', 0)
         # Contract owner address, converted to a hex string
         owner_address = kwargs.setdefault('owner_address', self.stabila.default_address.hex)
-        # The max energy which will be consumed by the owner
+        # The max ucr which will be consumed by the owner
         # in the process of excution or creation of the contract,
         # is an integer which should be greater than 0.
-        origin_energy_limit = kwargs.setdefault('origin_energy_limit', 10000000)
+        origin_ucr_limit = kwargs.setdefault('origin_ucr_limit', 10000000)
 
         if not is_integer(user_fee_percentage) and not user_fee_percentage:
             user_fee_percentage = 100
@@ -492,8 +492,8 @@ class TransactionBuilder(object):
                 user_fee_percentage > 100:
             raise ValueError('Invalid user fee percentage provided')
 
-        if not is_integer(origin_energy_limit) or origin_energy_limit < 0:
-            return ValueError('Invalid origin_energy_limit provided')
+        if not is_integer(origin_ucr_limit) or origin_ucr_limit < 0:
+            return ValueError('Invalid origin_ucr_limit provided')
 
         if not self.stabila.isAddress(owner_address):
             raise InvalidAddress('Invalid issuer address provided')
@@ -617,10 +617,10 @@ class TransactionBuilder(object):
             account = self.stabila.default_address.hex
 
         if not self.stabila.isAddress(account):
-            raise stabilaError('Invalid address provided')
+            raise StabilaError('Invalid address provided')
 
         if token_balance <= 0 or stb_balance <= 0:
-            raise stabilaError('Invalid amount provided')
+            raise StabilaError('Invalid amount provided')
 
         return self.stabila.manager.request('/wallet/exchangecreate', {
             'owner_address': self.stabila.address.to_hex(account),
@@ -745,7 +745,7 @@ class TransactionBuilder(object):
         )
 
         if not self.stabila.isAddress(issuer_address):
-            raise stabilaError('Invalid issuer address provided')
+            raise StabilaError('Invalid issuer address provided')
 
         total_supply = kwargs.setdefault('totalSupply', 0)
         stb_ratio = kwargs.setdefault('stbRatio', 1)
@@ -943,15 +943,15 @@ class TransactionBuilder(object):
             'consume_user_resource_percent': user_fee_percentage
         })
 
-    def update_energy_limit(self,
+    def update_ucr_limit(self,
                             contract_address,
-                            origin_energy_limit,
+                            origin_ucr_limit,
                             owner_address: str = None):
-        """Update energy limit.
+        """Update ucr limit.
 
         Args:
             contract_address (str): The address of the contract to be modified
-            origin_energy_limit (int): The maximum energy set by the creator that is created
+            origin_ucr_limit (int): The maximum ucr set by the creator that is created
             owner_address (str): Is the address of the creator
 
         Returns:
@@ -967,14 +967,14 @@ class TransactionBuilder(object):
         if not self.stabila.isAddress(contract_address):
             raise InvalidAddress('Invalid contractAddress provided')
 
-        if not is_integer(origin_energy_limit) or origin_energy_limit < 0 or \
-                origin_energy_limit > 10000000:
-            raise ValueError('Invalid originEnergyLimit  provided')
+        if not is_integer(origin_ucr_limit) or origin_ucr_limit < 0 or \
+                origin_ucr_limit > 10000000:
+            raise ValueError('Invalid originUcrLimit  provided')
 
-        return self.stabila.manager.request('wallet/updateenergylimit', {
+        return self.stabila.manager.request('wallet/updateucrlimit', {
             'owner_address': self.stabila.address.to_hex(owner_address),
             'contract_address': self.stabila.address.to_hex(contract_address),
-            'origin_energy_limit': origin_energy_limit
+            'origin_ucr_limit': origin_ucr_limit
         })
 
     def check_permissions(self, permissions, _type):
@@ -1013,14 +1013,14 @@ class TransactionBuilder(object):
             owner_address = self.stabila.default_address.hex
 
         if not self.check_permissions(owner_permissions, 0):
-            raise InvalidstabilaError('Invalid ownerPermissions provided')
+            raise InvalidStabilaError('Invalid ownerPermissions provided')
 
         if not self.check_permissions(witness_permissions, 1):
-            raise InvalidstabilaError('Invalid witnessPermissions provided')
+            raise InvalidStabilaError('Invalid witnessPermissions provided')
 
         for actives_permission in actives_permissions:
             if not self.check_permissions(actives_permission, 2):
-                raise InvalidstabilaError('Invalid activesPermissions provided')
+                raise InvalidStabilaError('Invalid activesPermissions provided')
 
         data = {
             owner_address: owner_address

@@ -9,8 +9,8 @@ stabila = stabila(full_node=full_node,
             event_server=event_server)
 
 
-stabila.address.to_hex('TT67rPNwgmpeimvHUMVzFfKsjL9GZ1wGw8')
-# result: 41BBC8C05F1B09839E72DB044A6AA57E2A5D414A10
+print(stabila.address.to_hex('SSVezpwJh55m662o5MsyF85GPVTBD755WR'))
+# result: 3F390CE574669E1DF7430B034DF85001EACD818032
 
-stabila.address.from_hex('41BBC8C05F1B09839E72DB044A6AA57E2A5D414A10')
-# result: TT67rPNwgmpeimvHUMVzFfKsjL9GZ1wGw8
+print(stabila.address.from_hex('3f390ce574669e1df7430b034df85001eacd818032'))
+# result: SSVezpwJh55m662o5MsyF85GPVTBD755WR

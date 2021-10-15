@@ -10,10 +10,10 @@ stabila = stabila(full_node=full_node,
 
 
 
-stabila.toUnit(1)
+print(stabila.toUnit(1))
 # result: 1000000
 
-stabila.fromUnit(1000000)
+print(stabila.fromUnit(1000000))
 # result: 1
 
 
