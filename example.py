@@ -46,34 +46,36 @@ logger.debug('Genesis Block Transaction Count: ')
 logger.debug('Transactions:' + str(genesis_block_count))
 logger.debug('-----------')
 
-transaction = stabila.stb.get_transaction('757a14cef293c69b1cf9b9d3d19c2e40a330c640b05c6ffa4d54609a9628758c')
+try:
+    transaction = stabila.stb.get_transaction('757a14cef293c69b1cf9b9d3d19c2e40a330c640b05c6ffa4d54609a9628758c')
 
-logger.debug('Transaction: ')
-logger.debug('- Hash: ' + transaction['txID'])
-logger.debug('- Transaction: ' + json.dumps(transaction, indent=2))
-logger.debug('-----------')
+    logger.debug('Transaction: ')
+    logger.debug('- Hash: ' + transaction['txID'])
+    logger.debug('- Transaction: ' + json.dumps(transaction, indent=2))
+    logger.debug('-----------')
+except ValueError as ve:
+    logger.debug('ID not found')
 
-
-account_info = stabila.stb.get_account('TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+account_info = stabila.stb.get_account('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 
 logger.debug('Account information: ')
-logger.debug('- Address: TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+logger.debug('- Address: SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 logger.debug('- Account:' + json.dumps(account_info, indent=2))
 logger.debug('-----------')
 
 
-balance = stabila.stb.get_account('TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+balance = stabila.stb.get_account('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 
 logger.debug('Account balance: ')
-logger.debug('- Address: TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+logger.debug('- Address: SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 logger.debug('- Account:' + json.dumps(balance, indent=2))
 logger.debug('-----------')
 
 
-band_width = stabila.stb.get_band_width('TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+band_width = stabila.stb.get_band_width('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 
 logger.debug('Account bandwidth: ')
-logger.debug('- Address: TKLnCNY5EsLNCvCXQTCn1dtqvc6vHhJUyJ')
+logger.debug('- Address: SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
 logger.debug('- Bandwidth:' + json.dumps(band_width, indent=2))
 logger.debug('-----------')
 
