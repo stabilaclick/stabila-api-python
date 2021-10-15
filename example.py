@@ -103,7 +103,7 @@ logger.debug('-----------')
 # logger.debug('-----------')
 
 
-event_result = stabila.get_event_result('TGEJj8eus46QMHPgWQe1FJ2ymBXRm96fn1', 0, 'Notify')
+event_result = stabila.get_event_result('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs', 0, 'Notify')
 
 logger.debug('Event result:')
 logger.debug('Contract Address: TGEJj8eus46QMHPgWQe1FJ2ymBXRm96fn1')

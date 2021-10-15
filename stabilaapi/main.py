@@ -215,13 +215,13 @@ class stabila:
         contract_address = kwargs.setdefault('contract_address', self.default_address.hex)
 
         if not self.isAddress(contract_address):
-            raise InvalidstabilaError('Invalid contract address provided')
+            raise InvalidStabilaError('Invalid contract address provided')
 
         if event_name and not contract_address:
-            raise stabilaError('Usage of event name filtering requires a contract address')
+            raise StabilaError('Usage of event name filtering requires a contract address')
 
         if block_number and event_name is None:
-            raise stabilaError('Usage of block number filtering requires an event name')
+            raise StabilaError('Usage of block number filtering requires an event name')
 
         if not is_integer(page):
             raise ValueError('Invalid size provided')
