@@ -1,6 +1,7 @@
 import json
 import logging
 
+import stabilaapi.exceptions
 from stabilaapi import stabila
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -102,22 +103,25 @@ logger.debug('-----------')
 # logger.debug('- Result: ' + json.dumps(send, indent=2))
 # logger.debug('-----------')
 
+try:
+    event_result = stabila.get_event_result('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs', 0, 'Notify')
 
-event_result = stabila.get_event_result('SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs', 0, 'Notify')
+    logger.debug('Event result:')
+    logger.debug('Contract Address: SUSdSJMerVr1XezP7bjhSANWYkZkyJeQEs')
+    logger.debug('Event Name: Notify')
+    logger.debug('Block Number: 32162')
+    logger.debug('- Events: ' + json.dumps(event_result, indent=2))
+except TypeError as ve:
+    logger.debug('Please provide a valid contract address')
 
-logger.debug('Event result:')
-logger.debug('Contract Address: TGEJj8eus46QMHPgWQe1FJ2ymBXRm96fn1')
-logger.debug('Event Name: Notify')
-logger.debug('Block Number: 32162')
-logger.debug('- Events: ' + json.dumps(event_result, indent=2))
+try:
+    event_by_transaction_id = stabila.get_event_transaction_id('3d780e1ff5e5033ddf96b7a71fccfb13f88c787ec85c80b8c77e2252344c318c')
 
-
-event_by_transaction_id = stabila.get_event_transaction_id('32d7efe5f70c044bcd831f21f911209a7abf4ed0d5934b2c1b804e108008cd43')
-
-logger.debug('Specific event result:')
-logger.debug('Transaction: 32d7efe5f70c044bcd831f21f911209a7abf4ed0d5934b2c1b804e108008cd43')
-logger.debug('- Events: ' + json.dumps(event_by_transaction_id, indent=2))
-
+    logger.debug('Specific event result:')
+    logger.debug('Transaction: 3d780e1ff5e5033ddf96b7a71fccfb13f88c787ec85c80b8c77e2252344c318c')
+    logger.debug('- Events: ' + json.dumps(event_by_transaction_id, indent=2))
+except stabilaapi.exceptions.TransportError as e:
+    logger.debug('No event server setup')
 
 first_transaction = stabila.stb.get_transaction_from_block(0, 0)
 
