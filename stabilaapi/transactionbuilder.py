@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------
-# Copyright (c) iEXBase. All rights reserved.
+# Copyright (c) stabilaclick. All rights reserved.
 # Licensed under the MIT License.
 # See License.txt in the project root for license information.
 # --------------------------------------------------------------------
@@ -443,7 +443,7 @@ class TransactionBuilder(object):
             >>>
             >>> stabila = stabila()
             >>> stabila.transaction_builder.create_smart_contract(
-            >>>    fee_limit=10**9,
+            >>>    fee_limit=10**6,
             >>>    call_value=0,
             >>>    consume_user_resource_percent=10
             >>> )
@@ -482,7 +482,7 @@ class TransactionBuilder(object):
             raise ValueError('Invalid bytecode provided')
 
         if not is_integer(fee_limit) or fee_limit <= 0 or \
-                fee_limit > 1000000000:
+                fee_limit > 10000000:
             raise ValueError('Invalid fee limit provided')
 
         if not is_integer(call_value) or call_value < 0:
@@ -534,7 +534,7 @@ class TransactionBuilder(object):
         parameters = kwargs.setdefault('parameters', [])
         issuer_address = kwargs.setdefault('issuer_address', self.stabila.default_address.hex)
         call_value = kwargs.setdefault('call_value', 0)
-        fee_limit = kwargs.setdefault('fee_limit', 1000000000)
+        fee_limit = kwargs.setdefault('fee_limit', 10000000)
         token_value = kwargs.setdefault('token_value', 0)
         token_id = kwargs.setdefault('token_id', 0)
 
@@ -553,7 +553,7 @@ class TransactionBuilder(object):
         if not is_integer(call_value) or call_value < 0:
             raise ValueError('Invalid call value provided')
 
-        if not is_integer(fee_limit) or fee_limit <= 0 or fee_limit > 1000000000:
+        if not is_integer(fee_limit) or fee_limit <= 0 or fee_limit > 10000000:
             raise ValueError('Invalid fee limit provided')
 
         function_selector = function_selector.replace('/\s*/g', '')

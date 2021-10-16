@@ -96,7 +96,7 @@ Smart Contract
 
     # Submit the transaction that deploys the contract
     tx = hello.deploy(
-        fee_limit=10**9,
+        fee_limit=10**6,
         call_value=0,
         consume_user_resource_percent=1
     )

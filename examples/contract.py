@@ -2,6 +2,7 @@ import solcx
 from stabilaapi import stabila, HttpProvider
 from solcx import compile_source
 
+
 full_node = HttpProvider('https://api.stabilascan.org')
 solidity_node = HttpProvider('https://api.stabilascan.org')
 event_server = HttpProvider('https://api.stabilascan.org')
@@ -38,13 +39,10 @@ compiled_sol = compile_source(contract_source_code)
 
 contract_interface = compiled_sol['<stdin>:Hello']
 
-hello = stabila.stb.contract(
-    abi=contract_interface['abi'],
-    bytecode=contract_interface['bin']
-)
+hello = stabila.stb.contract(abi=contract_interface['abi'], bytecode=contract_interface['bin'])
 
 # Submit the transaction that deploys the contract
-tx_data = hello.deploy(
+hello.transaction_builder.create_smart_contract(
     fee_limit=10**6,
     call_value=0,
     consume_user_resource_percent=1

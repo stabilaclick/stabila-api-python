@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # --------------------------------------------------------------------
-# Copyright (c) iEXBase. All rights reserved.
+# Copyright (c) stabilaclick. All rights reserved.
 # Licensed under the MIT License.
 # See License.txt in the project root for license information.
 # --------------------------------------------------------------------
@@ -11,7 +11,7 @@
 
     Connect to the stabila network.
 
-    :copyright: © 2019 by the iEXBase.
+    :copyright: © 2019 by the stabilaclick.
     :license: MIT License
 """
 
@@ -161,7 +161,7 @@ class stabila:
         try:
             private_key = PrivateKey(value)
         except ValueError:
-            raise stabilaError('Invalid private key provided')
+            raise StabilaError('Invalid private key provided')
 
         self._private_key = str(private_key).lower()
 
@@ -181,7 +181,7 @@ class stabila:
         """
 
         if not self.isAddress(address):
-            raise InvalidstabilaError('Invalid address provided')
+            raise InvalidStabilaError('Invalid address provided')
 
         _hex = self.address.to_hex(address)
         _base58 = self.address.from_hex(address)
