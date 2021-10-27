@@ -32,7 +32,7 @@ local development this would be something like ``http://localhost:8090``.
     >>> solidity_node = HttpProvider('http://localhost:8090')
     >>> event_server = HttpProvider('http://localhost:8090')
 
-    >>> stabila = stabila(full_node, solidity_node, event_server)
+    >>> stabila = Stabila(full_node, solidity_node, event_server)
 
 
 Base API

@@ -50,7 +50,7 @@ class Address(object):
     def to_hex(address):
         """Helper function that will convert a generic value to hex"""
         if is_hex(address):
-            return address.lower().replace('0x', '41', 2)
+            return address.lower().replace('0x', '3f', 2)
 
         return base58.b58decode_check(address).hex().upper()
 

@@ -43,7 +43,7 @@ To use the stabila library you will need to initialize the
     >>> solidity_node = HttpProvider('https://api.stabilascan.org')
     >>> event_server = 'https://api.stabilascan.org'
     >>>
-    >>> stabila = stabila(full_node, solidity_node, event_server)
+    >>> stabila = Stabila(full_node, solidity_node, event_server)
     >>> stabila.default_block = 'latest'
 
 

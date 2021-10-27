@@ -25,9 +25,7 @@ from stabilaapi.contract import Contract
 from stabilaapi.exceptions import InvalidStabilaError, StabilaError, TimeExhausted
 from stabilaapi.module import Module
 from stabilaapi.common.blocks import select_method_for_block
-from stabilaapi.common.toolz import (
-    assoc
-)
+from stabilaapi.common.toolz import (assoc)
 from stabilaapi.common.account import Account
 
 STB_MESSAGE_HEADER = '\x19STABILA Signed Message:\n'
@@ -460,7 +458,7 @@ class Stb(Module):
 
         return result
 
-    def cd_balance(self, amount=0, duration=3, resource='BANDWIDTH', account=None):
+    def cd_balance(self, amount, duration, resource, account=None):
         """
         Cdes an amount of STB.
         Will give bandwidth OR Ucr and STABILA Power(voting rights)
@@ -653,7 +651,7 @@ class Stb(Module):
         message_hash = self.stabila.keccak(text=header+message)
         recovered = Account.recover_hash(self.stabila.toHex(message_hash), signed_message.signature)
 
-        stabila_address = '41' + recovered[2:]
+        stabila_address = '3f' + recovered[2:]
         base58address = self.stabila.address.from_hex(stabila_address).decode()
 
         if base58address == address:

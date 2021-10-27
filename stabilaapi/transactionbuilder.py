@@ -125,11 +125,11 @@ class TransactionBuilder(object):
         """
         Cds an amount of STB.
         Will give bandwidth OR Ucr and stabila Power(voting rights)
-        to the owner of the frozen tokens.
+        to the owner of the cded tokens.
 
         Args:
-            amount (int): number of frozen stb
-            duration (int): duration in days to be frozen
+            amount (int): number of cded stb
+            duration (int): duration in days to be cded
             resource (str): type of resource, must be either "UCR" or "BANDWIDTH"
             account (str): address that is freezing stb account
 
@@ -153,8 +153,8 @@ class TransactionBuilder(object):
 
         response = self.stabila.manager.request('/wallet/cdbalance', {
             'owner_address': self.stabila.address.to_hex(account),
-            'frozen_balance': self.stabila.toUnit(amount),
-            'frozen_duration': int(duration),
+            'cded_balance': self.stabila.toUnit(amount),
+            'cded_duration': int(duration),
             'resource': resource
         })
 
@@ -279,11 +279,11 @@ class TransactionBuilder(object):
             voter_address: voter address
 
         Examples:
-            >>> from stabilaapi import stabila
+            >>> from stabilaapi import Stabila
             >>> data = [
             >>>     ('TRJpw2uqohP7FUmAEJgt57wakRn6aGQU6Z', 1)
             >>> ]
-            >>> stabila = stabila()
+            >>> stabila = Stabila()
             >>> stabila.transaction.vote(data)
 
         """
@@ -323,12 +323,12 @@ class TransactionBuilder(object):
             issuer_address: owner address
 
         Examples:
-            >>> from stabilaapi import stabila
+            >>> from stabilaapi import Stabila
             >>> data = [
             >>>     {'key': 1, 'value': 2},
             >>>     {'key': 1, 'value': 2}
             >>> ]
-            >>> stabila = stabila()
+            >>> stabila = Stabila()
             >>> stabila.transaction.create_proposal(data)
 
 
@@ -439,9 +439,9 @@ class TransactionBuilder(object):
 
         Example:
         .. code-block:: python
-            >>> from stabilaapi import stabila
+            >>> from stabilaapi import Stabila
             >>>
-            >>> stabila = stabila()
+            >>> stabila = Stabila()
             >>> stabila.transaction_builder.create_smart_contract(
             >>>    fee_limit=10**6,
             >>>    call_value=0,
@@ -513,9 +513,9 @@ class TransactionBuilder(object):
             **kwargs: Fill in the required parameters
 
         Examples:
-            >>> stabila = stabila()
+            >>> stabila = Stabila()
             >>> stabila.transaction_builder.trigger_smart_contract(
-            >>>     contract_address='413c8143e98b3e2fe1b1a8fb82b34557505a752390',
+            >>>     contract_address='3f3c8143e98b3e2fe1b1a8fb82b34557505a752390',
             >>>     function_selector='set(uint256,uint256)',
             >>>     fee_limit=30000,
             >>>     call_value=0,
@@ -566,7 +566,7 @@ class TransactionBuilder(object):
                     raise ValueError('Invalid parameter type provided: ' + abi['type'])
 
                 if abi['type'] == 'address':
-                    abi['value'] = self.stabila.address.to_hex(abi['value']).replace('41', '0x', 1)
+                    abi['value'] = self.stabila.address.to_hex(abi['value']).replace('3f', '0x', 1)
 
                 types.append(abi['type'])
                 values.append(abi['value'])
@@ -730,8 +730,8 @@ class TransactionBuilder(object):
             >>>     'description': 'Hello World',
             >>>     'url': 'https://github.com',
             >>>     'totalSupply': 25000000,
-            >>>     'frozenAmount': 1,
-            >>>     'frozenDuration': 2,
+            >>>     'cdedAmount': 1,
+            >>>     'cdedDuration': 2,
             >>>     'freeBandwidth': 10000,
             >>>     'freeBandwidthLimit': 10000,
             >>>     'saleStart': start,
@@ -755,8 +755,8 @@ class TransactionBuilder(object):
         )
         free_bandwidth = kwargs.setdefault('freeBandwidth', 0)
         free_bandwidth_limit = kwargs.setdefault('freeBandwidthLimit', 0)
-        frozen_amount = kwargs.setdefault('frozenAmount', 0)
-        frozen_duration = kwargs.setdefault('frozenDuration', 0)
+        cded_amount = kwargs.setdefault('cdedAmount', 0)
+        cded_duration = kwargs.setdefault('cdedDuration', 0)
         vote_score = kwargs.setdefault('voteScore', 0)
         precision = kwargs.setdefault('precision', 0)
 
@@ -801,17 +801,17 @@ class TransactionBuilder(object):
                 or (free_bandwidth and not free_bandwidth_limit):
             raise ValueError('Invalid free bandwidth limit provided')
 
-        if not is_integer(frozen_amount) or frozen_amount < 0 \
-                or (not frozen_duration and frozen_amount):
-            raise ValueError('Invalid frozen supply provided')
+        if not is_integer(cded_amount) or cded_amount < 0 \
+                or (not cded_duration and cded_amount):
+            raise ValueError('Invalid cded supply provided')
 
-        if not is_integer(frozen_duration) or frozen_duration < 0 \
-                or (frozen_duration and not frozen_amount):
-            raise ValueError('Invalid frozen duration provided')
+        if not is_integer(cded_duration) or cded_duration < 0 \
+                or (cded_duration and not cded_amount):
+            raise ValueError('Invalid cded duration provided')
 
-        frozen_supply = {
-            'frozen_amount': int(frozen_amount),
-            'frozen_days': int(frozen_duration)
+        cded_supply = {
+            'cded_amount': int(cded_amount),
+            'cded_days': int(cded_duration)
         }
 
         response = self.stabila.manager.request('/wallet/createassetissue', {
@@ -827,7 +827,7 @@ class TransactionBuilder(object):
             'end_time': int(kwargs.get('saleEnd')),
             'free_asset_net_limit': int(free_bandwidth),
             'public_free_asset_net_limit': int(free_bandwidth_limit),
-            'frozen_supply': frozen_supply,
+            'cded_supply': cded_supply,
             'vote_score': vote_score,
             'precision': precision
         })

@@ -61,11 +61,11 @@ Smart Contract
     solidity_node = 'https://api.stabilascan.org'
     event_server = 'https://api.stabilascan.org'
 
-    stabila = stabila(full_node=full_node,
+    stabila = Stabila(full_node=full_node,
             solidity_node=solidity_node,
             event_server=event_server)
 
-    # or default (stabila = stabila())
+    # or default (stabila = Stabila())
 
 
     # Solidity source code
@@ -116,7 +116,7 @@ Base Example
     solidity_node = 'https://api.stabilascan.org'
     event_server = 'https://api.stabilascan.org'
 
-    stabila = stabila(full_node=full_node,
+    stabila = Stabila(full_node=full_node,
             solidity_node=solidity_node,
             event_server=event_server)
 
